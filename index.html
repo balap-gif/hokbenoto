@@ -64,6 +64,8 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .form-group input { width: 100%; padding: 13px 16px; background: var(--card-light); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 15px; outline: none; transition: all .2s; }
 .form-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
 .login-error { color: var(--red); font-size: 12px; min-height: 20px; margin-bottom: 8px; }
+.remember-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.remember-row label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .25s; }
 .btn-full { width: 100%; }
@@ -363,6 +365,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
     <p class="sub">Sistem Izin Keluar & Jobdesk Staf</p>
     <div class="form-group"><label>Nama Staf</label><input type="text" id="loginName" placeholder="Masukkan nama lengkap" autocomplete="off"></div>
     <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="Masukkan password" autocomplete="off"></div>
+    <div class="remember-row"><label><input type="checkbox" id="rememberMe"> Ingat saya</label></div>
     <div class="login-error" id="loginError"></div>
     <button class="btn btn-full btn-gold" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Masuk</button>
   </div>
@@ -402,7 +405,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
       <div class="history-header"><h2><i class="fas fa-history"></i> Riwayat Izin Hari Ini</h2><p>Daftar lengkap aktivitas izin keluar staf</p></div>
       <div class="table-wrapper">
         <table class="izin-table"><thead><tr><th>NAMA</th><th>ROLE</th><th>JAM KELUAR</th><th>JAM MASUK</th><th>DURASI</th><th>STATUS</th></tr></thead>
-        <tbody id="historyBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p></td></tr></tbody></table>
+        <tbody id="historyBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p><\/td><\/tr><\/tbody></table>
       </div>
     </div>
   </div>
@@ -420,7 +423,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
   <div class="content-center" id="shiftCenter"></div>
 </div>
 
-<!-- ===== VIEW STAF - TABEL STYLE ===== -->
+<!-- VIEW STAF - TABEL STYLE -->
 <div class="view scroll-view" id="viewStaf">
   <div class="sec-header">
     <h2><div class="hd-icon hd-purple"><i class="fas fa-address-book"></i></div> DATA STAF</h2>
@@ -525,6 +528,33 @@ var settings=JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 var currentUser=null,currentView="izin",editJdTarget=null,editingShiftNama=null;
 var storedActiveDate="",currentAdminLogDate="",durationInterval=null;
 
+// ===== PERSISTENSI LOGIN =====
+function saveLoginSession(name, remember){
+  localStorage.setItem("hokben_currentUser", name);
+  if(remember){
+    localStorage.setItem("hokben_rememberMe", "true");
+  } else {
+    sessionStorage.setItem("hokben_currentUser", name);
+  }
+}
+
+function clearLoginSession(){
+  localStorage.removeItem("hokben_currentUser");
+  localStorage.removeItem("hokben_rememberMe");
+  sessionStorage.removeItem("hokben_currentUser");
+}
+
+function getSavedUser(){
+  var user = localStorage.getItem("hokben_currentUser");
+  if(user) return user;
+  return sessionStorage.getItem("hokben_currentUser");
+}
+
+function getRememberStatus(){
+  return localStorage.getItem("hokben_rememberMe") === "true";
+}
+
+// ===== FUNGSI UTAMA =====
 function getRole(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].role;}return null;}
 function getGmail(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].gmail||"-";}return"-";}
 function getPass(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].password||DEFAULT_PASS;}return DEFAULT_PASS;}
@@ -549,10 +579,11 @@ function showToast(msg,type){type=type||"info";var c=document.getElementById("to
 
 (function(){var c=document.getElementById("particles");for(var i=0;i<14;i++){var p=document.createElement("div");p.className="particle";var s=Math.random()*3+1;p.style.width=s+"px";p.style.height=s+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=(Math.random()*14+8)+"s";p.style.animationDelay=(Math.random()*12)+"s";c.appendChild(p);}})();
 
-// LOGIN MANUAL (TANPA DROPDOWN)
+// ===== LOGIN =====
 function doLogin(){
   var name = document.getElementById("loginName").value.trim().toUpperCase();
   var pass = document.getElementById("loginPass").value;
+  var remember = document.getElementById("rememberMe").checked;
   var err = document.getElementById("loginError");
   
   if(!name){ err.textContent = "Masukkan nama staf"; return; }
@@ -566,6 +597,8 @@ function doLogin(){
   
   err.textContent = "";
   currentUser = name;
+  saveLoginSession(name, remember);
+  
   document.getElementById("loginScreen").classList.add("hidden");
   document.getElementById("appContainer").style.display = "block";
   var role = staff.role;
@@ -578,10 +611,56 @@ function doLogin(){
   showToast("Selamat datang, " + name, "success");
 }
 
+function autoLogin(){
+  var savedUser = getSavedUser();
+  if(savedUser){
+    var staff = null;
+    for(var i=0;i<daftarStaf.length;i++){
+      if(daftarStaf[i].nama === savedUser){ staff = daftarStaf[i]; break; }
+    }
+    if(staff){
+      currentUser = savedUser;
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appContainer").style.display = "block";
+      var role = staff.role;
+      var tag = document.getElementById("userRoleTag");
+      tag.textContent = role;
+      tag.className = "role-tag " + (role || "").toLowerCase();
+      document.getElementById("userName").textContent = savedUser;
+      document.getElementById("btnAdmin").style.display = (savedUser === ADMIN_USER) ? "flex" : "none";
+      switchView("izin");
+      showToast("Selamat datang kembali, " + savedUser, "success");
+      return true;
+    }
+  }
+  return false;
+}
+
 document.getElementById("loginPass").addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
 
-function doLogout(){ currentUser=null; document.getElementById("appContainer").style.display="none"; document.getElementById("loginScreen").classList.remove("hidden"); document.getElementById("loginName").value=""; document.getElementById("loginPass").value=""; if(durationInterval)clearInterval(durationInterval); }
-function switchView(view){ currentView=view; document.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.view===view); }); document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); }); var el=document.getElementById("view"+view.charAt(0).toUpperCase()+view.slice(1)); if(el)el.classList.add("active"); if(view==="izin")renderIzinUI(); if(view==="jobdesk")renderJobdesk(); if(view==="shift")renderShift(); if(view==="staf")renderStaf(); if(view==="profil")renderProfil(); }
+function doLogout(){ 
+  currentUser = null; 
+  clearLoginSession();
+  document.getElementById("appContainer").style.display = "none"; 
+  document.getElementById("loginScreen").classList.remove("hidden"); 
+  document.getElementById("loginName").value = ""; 
+  document.getElementById("loginPass").value = ""; 
+  document.getElementById("rememberMe").checked = false;
+  if(durationInterval) clearInterval(durationInterval); 
+}
+
+function switchView(view){ 
+  currentView=view; 
+  document.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.view===view); }); 
+  document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); }); 
+  var el=document.getElementById("view"+view.charAt(0).toUpperCase()+view.slice(1)); 
+  if(el)el.classList.add("active"); 
+  if(view==="izin")renderIzinUI(); 
+  if(view==="jobdesk")renderJobdesk(); 
+  if(view==="shift")renderShift(); 
+  if(view==="staf")renderStaf(); 
+  if(view==="profil")renderProfil(); 
+}
 function checkDayChange(){ var todayStr=today(); if(storedActiveDate&&storedActiveDate!==todayStr){ db.ref("izinAktif").remove(); showToast("Hari berganti - semua izin aktif direset","info"); } db.ref("activeDate").set(todayStr); storedActiveDate=todayStr; }
 
 /* IZIN */
@@ -591,15 +670,15 @@ function renderIzinUI(){
   var active=izinAktif[currentUser];var activeDiv=document.getElementById("activeStatus");
   if(active){activeDiv.style.display="flex";document.getElementById("activeText").textContent="Sedang izin keluar ("+active.jabatan+")";var updateDur=function(){document.getElementById("activeDuration").textContent=formatDuration(Date.now()-active.mulai);};updateDur();if(durationInterval)clearInterval(durationInterval);durationInterval=setInterval(updateDur,1000);}else{activeDiv.style.display="none";if(durationInterval)clearInterval(durationInterval);}
   var sorted=logIzin.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});var tbody=document.getElementById("historyBody");
-  if(!sorted.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p></td></tr>';return;}
-  var html="";for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:Date.now();var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var status="",statusClass="";if(!l.selesai){status="Aktif";statusClass="active-b";}else if((endTime-l.mulai)>ALERT_MENIT*60000){status="Overdue";statusClass="overdue";}else{status="Selesai";statusClass="completed";}html+='<tr><td><strong>'+l.nama+'</strong></td><td><span class="role-tag '+(l.jabatan||"").toLowerCase()+'">'+(l.jabatan||"-")+'</span></td><td>'+w1+'</td><td>'+w2+'</td><td style="font-family:monospace">'+durasiStr+'</td><td><span class="status-badge '+statusClass+'">'+status+'</span></td></tr>';}tbody.innerHTML=html;
+  if(!sorted.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p><\/td><\/tr>';return;}
+  var html="";for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:Date.now();var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var status="",statusClass="";if(!l.selesai){status="Aktif";statusClass="active-b";}else if((endTime-l.mulai)>ALERT_MENIT*60000){status="Overdue";statusClass="overdue";}else{status="Selesai";statusClass="completed";}html+='<tr><td><strong>'+l.nama+'<\/strong><\/td><td><span class="role-tag '+(l.jabatan||"").toLowerCase()+'">'+(l.jabatan||"-")+'<\/span><\/td><td>'+w1+'<\/td><td>'+w2+'<\/td><td style="font-family:monospace">'+durasiStr+'<\/td><td><span class="status-badge '+statusClass+'">'+status+'<\/span><\/td><\/tr>';}tbody.innerHTML=html;
 }
 function mulaiKeluar(){var nama=currentUser,jabatan=getRole(nama);if(!jabatan){showToast("Role tidak ditemukan","error");return;}var cnt=hitungHarian[nama]||0,maxDay=getMaxPerDay(jabatan);if(cnt>=maxDay){showToast(nama+" sudah izin "+maxDay+"x hari ini","error");return;}if(izinAktif[nama]){showToast("Anda sedang dalam izin keluar","error");return;}var maxConc=getMaxConcurrent(jabatan),curConc=countIzinByRole(jabatan);if(maxConc<=0){showToast("Izin untuk jabatan "+jabatan+" saat ini dinonaktifkan (0)","error");return;}if(curConc>=maxConc){showToast("Batas izin bersamaan "+jabatan+" tercapai ("+maxConc+" orang)","error");return;}var now=Date.now();var key=nama+"_"+now;var updates={};updates["izinAktif/"+nama]={jabatan:jabatan,mulai:now,key:key};updates["logIzin/"+today()+"/"+key]={nama:nama,jabatan:jabatan,mulai:now,selesai:null};updates["hitungHarian/"+today()+"/"+nama]=(cnt+1);db.ref().update(updates);showToast(nama+" mulai izin keluar","success");}
 function akhiriKeluar(){var nama=currentUser;if(!izinAktif[nama]){showToast("Anda tidak sedang dalam izin","error");return;}var now=Date.now();var activeData=izinAktif[nama];var key=activeData.key;if(key){var updates={};updates["izinAktif/"+nama]=null;updates["logIzin/"+today()+"/"+key+"/selesai"]=now;db.ref().update(updates);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");}else{db.ref("izinAktif/"+nama).remove();db.ref("logIzin/"+today()).orderByChild("nama").equalTo(nama).once("value",function(snap){var data=snap.val();if(!data)return;var keys=Object.keys(data);for(var i=keys.length-1;i>=0;i--){if(data[keys[i]].selesai===null){db.ref("logIzin/"+today()+"/"+keys[i]+"/selesai").set(now);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");break;}}});}}
 function forceEndAllIzin(){if(currentUser!==ADMIN_USER)return;db.ref("izinAktif").remove();showToast("Semua izin aktif telah di-force end","success");}
 function resetAllTodayData(){if(currentUser!==ADMIN_USER)return;if(confirm("RESET DATA HARI INI?")){db.ref("izinAktif").remove();db.ref("hitungHarian/"+today()).remove();showToast("Data izin hari ini telah direset","success");}}
 
-/* JOBSDESK - ringkas */
+/* JOBSDESK */
 function renderJobdesk(){
   var editable=canEditJd();var totalDone=0,totalAll=0;var kasirList=[],csList=[],kksList=[];
   for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}
@@ -631,13 +710,12 @@ function cancelShiftEdit(){editingShiftNama=null;renderShift();}
 function onShiftPresetChange(sel,nama){var val=sel.value,inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_"));if(val==="__custom"){inp.value="";inp.focus();}else if(val){inp.value=val;}else{inp.value="";}}
 function saveShift(nama){var inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_"));if(!inp){showToast("Error","error");return;}var val=inp.value.trim();if(!val){showToast("Pilih atau ketik shift","error");return;}db.ref("shifts/"+nama).set(val);editingShiftNama=null;showToast("Shift "+nama+" diperbarui","success");}
 
-/* ===== STAF DIRECTORY - TABEL ===== */
+/* STAF DIRECTORY - TABEL */
 function renderStaf(){
   var csList=[],kasirList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i]);else if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i]);else kksList.push(daftarStaf[i]);}
   var izinCount=Object.keys(izinAktif).length;
   document.getElementById("stafHeaderActions").innerHTML='<div class="stat-pill"><span class="sv green">'+daftarStaf.length+'</span><span class="sl">Total</span></div><div class="stat-pill"><span class="sv gold">'+izinCount+'</span><span class="sl">Izin Aktif</span></div>';
   
-  // Stat Cards
   var h='<div class="staf-stats-row">';
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--gold),var(--orange))"><i class="fas fa-users"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--gold)">'+daftarStaf.length+'</div><div class="ssc-lbl">Total Staf</div></div></div>';
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--blue),#2563eb)"><i class="fas fa-headset"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--blue)">'+csList.length+'</div><div class="ssc-lbl">CS</div></div></div>';
@@ -645,7 +723,6 @@ function renderStaf(){
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--teal),#16a085)"><i class="fas fa-user-gear"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--teal)">'+kksList.length+'</div><div class="ssc-lbl">KKS</div></div></div>';
   h+='</div>';
   
-  // Tabel Staf
   h+='<div class="staf-table-container"><table class="staf-table"><thead><tr><th>NAMA STAF</th><th>JABATAN</th><th>STATUS</th><th>EMAIL</th></tr></thead><tbody>';
   var allStaf = [...csList, ...kasirList, ...kksList];
   for(var i=0;i<allStaf.length;i++){
@@ -734,28 +811,15 @@ async function initializeApp(){
     await new Promise(function(resolve){var check=setInterval(function(){if(daftarStaf.length>0){clearInterval(check);resolve();}},100);setTimeout(function(){clearInterval(check);resolve();},3000);});
     var dateSnap=await db.ref("activeDate").once("value");storedActiveDate=dateSnap.val()||"";
     checkDayChange();setInterval(checkDayChange,30000);
-    document.getElementById("loadingScreen").classList.add("hidden");document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("loadingScreen").classList.add("hidden");
+    // Coba auto login
+    var autoLoginSuccess = autoLogin();
+    if(!autoLoginSuccess){
+      document.getElementById("loginScreen").classList.remove("hidden");
+    }
   }catch(err){document.getElementById("loadingError").textContent="Gagal terhubung: "+err.message;document.querySelector(".loading-spinner").style.display="none";}
 }
 initializeApp();
 </script>
 </body>
 </html>
-<script>
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'F12') e.preventDefault();
-    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
-    if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
-});
-
-setInterval(() => {
-    const before = new Date();
-    debugger;
-    const after = new Date();
-    if (after - before > 100) {
-        document.body.innerHTML = '<h1 style="text-align:center;margin-top:50px;">Akses ditolak</h1>';
-    }
-}, 1000);
-</script>
