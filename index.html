@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <style>
+/* ===== SAME CSS AS BEFORE (keep all existing styles) ===== */
 :root {
   --bg: #f0f2f5;
   --card: rgba(255,255,255,0.95);
@@ -484,13 +485,23 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
   </div>
 </div>
 
-<!-- PHOTO UPLOAD MODAL -->
+<!-- PHOTO UPLOAD MODAL - DIPERBAIKI -->
 <div class="modal-overlay" id="photoModal" onclick="if(event.target===this)closePhotoModal()">
   <div class="modal" style="width:450px">
-    <div class="sub-modal-header"><h3><i class="fas fa-camera"></i> Upload Foto Profil</h3><p>Pilih foto dari perangkat Anda</p></div>
+    <div class="sub-modal-header"><h3><i class="fas fa-camera"></i> Upload Foto Profil</h3><p>Pilih foto dari perangkat Anda (Max 2MB)</p></div>
     <div class="modal-body">
-      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto()">
-      <div style="text-align:center;padding:20px"><div id="photoPreview" style="width:150px;height:150px;border-radius:75px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;overflow:hidden"><i class="fas fa-user" style="font-size:60px;color:#fff"></i></div><button class="btn btn-gold" onclick="document.getElementById('photoInput').click()"><i class="fas fa-upload"></i> Pilih Foto</button><p style="font-size:12px;color:var(--text-muted);margin-top:16px">Format: JPG, PNG, GIF (Max 2MB)</p></div>
+      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/gif" style="display:none" onchange="uploadPhoto()">
+      <div style="text-align:center;padding:20px">
+        <div id="photoPreview" style="width:150px;height:150px;border-radius:75px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;">
+          <i class="fas fa-user" style="font-size:60px;color:#fff"></i>
+        </div>
+        <div id="uploadProgress" style="display:none;margin:10px auto;width:80%;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div id="uploadProgressBar" style="width:0%;height:100%;background:var(--green);transition:width .3s"></div>
+        </div>
+        <button class="btn btn-gold" onclick="document.getElementById('photoInput').click()" style="margin-bottom:10px"><i class="fas fa-upload"></i> Pilih Foto</button>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px">Format: JPG, PNG, GIF (Max 2MB)</p>
+        <p id="uploadStatus" style="font-size:12px;margin-top:8px"></p>
+      </div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closePhotoModal()">Batal</button></div>
   </div>
@@ -528,6 +539,30 @@ var settings=JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 var currentUser=null,currentView="izin",editJdTarget=null,editingShiftNama=null;
 var storedActiveDate="",currentAdminLogDate="",durationInterval=null;
 
+function getRole(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].role;}return null;}
+function getGmail(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].gmail||"-";}return"-";}
+function getPass(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].password||DEFAULT_PASS;}return DEFAULT_PASS;}
+function getPhotoURL(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].photoURL||null;}return null;}
+function getInitials(n){return n.split(" ").map(function(w){return w[0];}).join("").substring(0,2);}
+function today(){return new Date().toDateString();}
+function todayYMD(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2,"0")+"-"+d.getDate().toString().padStart(2,"0");}
+function formatTime(ts){if(!ts)return"-";var d=new Date(ts);return d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
+function formatDuration(ms){if(!ms)return"-";var m=Math.floor(ms/60000);var s=Math.floor((ms%60000)/1000);return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
+function jdKey(a,b,c){return a+"::"+b+"::"+c;}
+function objToArr(o){if(!o)return[];return Object.keys(o).sort(function(a,b){return Number(a)-Number(b);}).map(function(k){return o[k];});}
+function stafObjToArr(o){if(!o)return[];return Object.keys(o).map(function(k){return o[k];});}
+function arrToObj(a){var o={};for(var i=0;i<a.length;i++)o[i]=a[i];return o;}
+function canEditJd(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editJobdesk&&settings.editJobdesk[r]);}
+function canEditShift(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editShift&&settings.editShift[r]);}
+function getMaxPerDay(role){if(settings.maxIzinPerDay&&settings.maxIzinPerDay[role]!==undefined)return Number(settings.maxIzinPerDay[role]);return 4;}
+function getMaxConcurrent(role){if(settings.maxIzinConcurrent&&settings.maxIzinConcurrent[role]!==undefined)return Number(settings.maxIzinConcurrent[role]);return 2;}
+function countIzinByRole(role){var c=0;for(var n in izinAktif){if(izinAktif[n].jabatan===role)c++;}return c;}
+function findPreset(val){if(!val)return null;var v=val.trim().toUpperCase();for(var i=0;i<SHIFT_PRESET.length;i++){if(v.indexOf(SHIFT_PRESET[i].label)!==-1||v===SHIFT_PRESET[i].time.toUpperCase())return SHIFT_PRESET[i];}return null;}
+
+function showToast(msg,type){type=type||"info";var c=document.getElementById("toastContainer"),t=document.createElement("div");t.className="toast "+type;var ic={success:"fa-check-circle",error:"fa-exclamation-circle",info:"fa-info-circle"};t.innerHTML='<i class="fas '+(ic[type]||ic.info)+'"></i> '+msg;c.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove();},3000);}
+
+(function(){var c=document.getElementById("particles");for(var i=0;i<14;i++){var p=document.createElement("div");p.className="particle";var s=Math.random()*3+1;p.style.width=s+"px";p.style.height=s+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=(Math.random()*14+8)+"s";p.style.animationDelay=(Math.random()*12)+"s";c.appendChild(p);}})();
+
 // ===== PERSISTENSI LOGIN =====
 function saveLoginSession(name, remember){
   localStorage.setItem("hokben_currentUser", name);
@@ -553,31 +588,6 @@ function getSavedUser(){
 function getRememberStatus(){
   return localStorage.getItem("hokben_rememberMe") === "true";
 }
-
-// ===== FUNGSI UTAMA =====
-function getRole(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].role;}return null;}
-function getGmail(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].gmail||"-";}return"-";}
-function getPass(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].password||DEFAULT_PASS;}return DEFAULT_PASS;}
-function getPhotoURL(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].photoURL||null;}return null;}
-function getInitials(n){return n.split(" ").map(function(w){return w[0];}).join("").substring(0,2);}
-function today(){return new Date().toDateString();}
-function todayYMD(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2,"0")+"-"+d.getDate().toString().padStart(2,"0");}
-function formatTime(ts){if(!ts)return"-";var d=new Date(ts);return d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
-function formatDuration(ms){if(!ms)return"-";var m=Math.floor(ms/60000);var s=Math.floor((ms%60000)/1000);return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
-function jdKey(a,b,c){return a+"::"+b+"::"+c;}
-function objToArr(o){if(!o)return[];return Object.keys(o).sort(function(a,b){return Number(a)-Number(b);}).map(function(k){return o[k];});}
-function stafObjToArr(o){if(!o)return[];return Object.keys(o).map(function(k){return o[k];});}
-function arrToObj(a){var o={};for(var i=0;i<a.length;i++)o[i]=a[i];return o;}
-function canEditJd(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editJobdesk&&settings.editJobdesk[r]);}
-function canEditShift(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editShift&&settings.editShift[r]);}
-function getMaxPerDay(role){if(settings.maxIzinPerDay&&settings.maxIzinPerDay[role]!==undefined)return Number(settings.maxIzinPerDay[role]);return 4;}
-function getMaxConcurrent(role){if(settings.maxIzinConcurrent&&settings.maxIzinConcurrent[role]!==undefined)return Number(settings.maxIzinConcurrent[role]);return 2;}
-function countIzinByRole(role){var c=0;for(var n in izinAktif){if(izinAktif[n].jabatan===role)c++;}return c;}
-function findPreset(val){if(!val)return null;var v=val.trim().toUpperCase();for(var i=0;i<SHIFT_PRESET.length;i++){if(v.indexOf(SHIFT_PRESET[i].label)!==-1||v===SHIFT_PRESET[i].time.toUpperCase())return SHIFT_PRESET[i];}return null;}
-
-function showToast(msg,type){type=type||"info";var c=document.getElementById("toastContainer"),t=document.createElement("div");t.className="toast "+type;var ic={success:"fa-check-circle",error:"fa-exclamation-circle",info:"fa-info-circle"};t.innerHTML='<i class="fas '+(ic[type]||ic.info)+'"></i> '+msg;c.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove();},3000);}
-
-(function(){var c=document.getElementById("particles");for(var i=0;i<14;i++){var p=document.createElement("div");p.className="particle";var s=Math.random()*3+1;p.style.width=s+"px";p.style.height=s+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=(Math.random()*14+8)+"s";p.style.animationDelay=(Math.random()*12)+"s";c.appendChild(p);}})();
 
 // ===== LOGIN =====
 function doLogin(){
@@ -747,10 +757,119 @@ function renderStaf(){
   document.getElementById("stafContent").innerHTML=h;
 }
 
-/* FOTO */
-function openPhotoUpload(){document.getElementById("photoModal").classList.add("open");var preview=document.getElementById("photoPreview");var currentPhoto=getPhotoURL(currentUser);if(currentPhoto){preview.innerHTML='<img src="'+currentPhoto+'" style="width:100%;height:100%;object-fit:cover">';}else{var role=getRole(currentUser);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";preview.style.background=bgColor;preview.innerHTML='<i class="fas fa-user" style="font-size:60px;color:#fff"></i>';}}
-function closePhotoModal(){document.getElementById("photoModal").classList.remove("open");document.getElementById("photoInput").value="";}
-function uploadPhoto(){var file=document.getElementById("photoInput").files[0];if(!file){showToast("Pilih file","error");return;}if(!file.type.match('image.*')){showToast("Hanya file gambar","error");return;}if(file.size>2*1024*1024){showToast("Max 2MB","error");return;}showToast("Mengupload foto...","info");storage.ref('profile_photos/'+currentUser+'_'+Date.now()+'.jpg').put(file).then(function(s){return s.ref.getDownloadURL();}).then(function(url){return db.ref("staf/"+currentUser+"/photoURL").set(url);}).then(function(){showToast("Foto profil berhasil diupload!","success");closePhotoModal();renderProfil();if(currentView==="staf")renderStaf();}).catch(function(err){showToast("Gagal: "+err.message,"error");});}
+/* ===== FOTO PROFIL - DIPERBAIKI ===== */
+function openPhotoUpload(){
+  document.getElementById("photoModal").classList.add("open");
+  var preview = document.getElementById("photoPreview");
+  var currentPhoto = getPhotoURL(currentUser);
+  
+  // Reset preview
+  preview.innerHTML = '';
+  if(currentPhoto){
+    var img = document.createElement('img');
+    img.src = currentPhoto;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    preview.appendChild(img);
+  } else {
+    var icon = document.createElement('i');
+    icon.className = 'fas fa-user';
+    icon.style.fontSize = '60px';
+    icon.style.color = '#fff';
+    preview.appendChild(icon);
+  }
+  
+  // Reset status
+  document.getElementById("uploadStatus").textContent = '';
+  document.getElementById("uploadProgress").style.display = 'none';
+  document.getElementById("uploadProgressBar").style.width = '0%';
+}
+
+function closePhotoModal(){
+  document.getElementById("photoModal").classList.remove("open");
+  document.getElementById("photoInput").value = "";
+}
+
+function uploadPhoto(){
+  var file = document.getElementById("photoInput").files[0];
+  var statusEl = document.getElementById("uploadStatus");
+  var progressDiv = document.getElementById("uploadProgress");
+  var progressBar = document.getElementById("uploadProgressBar");
+  
+  if(!file){
+    showToast("Pilih file terlebih dahulu", "error");
+    return;
+  }
+  
+  // Validasi tipe file
+  var allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+  if(!allowedTypes.includes(file.type)){
+    showToast("Format file tidak didukung. Gunakan JPG, PNG, atau GIF", "error");
+    return;
+  }
+  
+  // Validasi ukuran (max 2MB)
+  if(file.size > 2 * 1024 * 1024){
+    showToast("Ukuran file maksimal 2MB", "error");
+    return;
+  }
+  
+  // Tampilkan progress
+  progressDiv.style.display = 'block';
+  statusEl.textContent = 'Mengupload... 0%';
+  statusEl.style.color = 'var(--text-muted)';
+  
+  // Buat nama file unik
+  var fileName = currentUser + '_' + Date.now() + '.jpg';
+  var storageRef = storage.ref('profile_photos/' + fileName);
+  
+  // Upload dengan progress
+  var uploadTask = storageRef.put(file);
+  
+  uploadTask.on('state_changed',
+    function(snapshot){
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      progressBar.style.width = progress + '%';
+      statusEl.textContent = 'Mengupload... ' + Math.round(progress) + '%';
+    },
+    function(error){
+      console.error("Upload error:", error);
+      progressDiv.style.display = 'none';
+      statusEl.textContent = '';
+      showToast("Gagal upload: " + error.message, "error");
+    },
+    function(){
+      // Upload selesai, dapatkan URL
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
+        // Simpan URL ke database
+        db.ref("staf/" + currentUser + "/photoURL").set(downloadURL).then(function(){
+          progressDiv.style.display = 'none';
+          statusEl.textContent = 'Upload berhasil!';
+          statusEl.style.color = 'var(--green)';
+          showToast("Foto profil berhasil diupload!", "success");
+          
+          // Tutup modal setelah 1 detik
+          setTimeout(function(){
+            closePhotoModal();
+            renderProfil(); // Refresh profil
+            if(currentView === "staf") renderStaf(); // Refresh staf jika perlu
+          }, 1000);
+        }).catch(function(err){
+          console.error("Database error:", err);
+          progressDiv.style.display = 'none';
+          statusEl.textContent = '';
+          showToast("Gagal menyimpan URL foto", "error");
+        });
+      }).catch(function(err){
+        console.error("Get download URL error:", err);
+        progressDiv.style.display = 'none';
+        statusEl.textContent = '';
+        showToast("Gagal mendapatkan URL foto", "error");
+      });
+    }
+  );
+}
 
 /* PROFIL */
 function renderProfil(){
@@ -812,7 +931,6 @@ async function initializeApp(){
     var dateSnap=await db.ref("activeDate").once("value");storedActiveDate=dateSnap.val()||"";
     checkDayChange();setInterval(checkDayChange,30000);
     document.getElementById("loadingScreen").classList.add("hidden");
-    // Coba auto login
     var autoLoginSuccess = autoLogin();
     if(!autoLoginSuccess){
       document.getElementById("loginScreen").classList.remove("hidden");
