@@ -2,302 +2,342 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HOKBEN TOTO - IZIN STAF</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HOKBEN TOTO - Sistem Izin Staf</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <style>
-:root{--bg:#08080d;--card:rgba(14,14,22,0.92);--card-light:rgba(255,255,255,0.04);--card-hover:rgba(255,255,255,0.07);--gold:#f5a623;--gold-dim:rgba(245,166,35,0.12);--orange:#e8751a;--red:#e8364f;--green:#2ecc71;--green-dim:rgba(46,204,113,0.12);--red-dim:rgba(232,54,79,0.12);--blue:#4a9eff;--blue-dim:rgba(74,158,255,0.12);--teal:#1abc9c;--teal-dim:rgba(26,188,156,0.12);--text:#eee8da;--text-muted:#6e6a76;--border:rgba(255,255,255,0.06);--border-gold:rgba(245,166,35,0.15);--radius:16px}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
-.bg-layer{position:fixed;inset:0;z-index:0;background-image:url("https://cdn.areabermain.club/assets/cdn/az5/2026/02/03/20260203/d8632a0c7c9125ef1a67069b11b5a102/background-imlek-hokbentoto.jpg");background-repeat:no-repeat;background-position:center;background-size:cover;filter:brightness(0.25) saturate(1.3)}
-.bg-overlay{position:fixed;inset:0;z-index:1;background:radial-gradient(ellipse at 15% 85%,rgba(245,166,35,0.06) 0%,transparent 55%),radial-gradient(ellipse at 85% 15%,rgba(232,117,26,0.04) 0%,transparent 55%),linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.7))}
-.particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-.particle{position:absolute;border-radius:50%;background:var(--gold);opacity:0;animation:floatUp linear infinite}
-@keyframes floatUp{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:0.4}85%{opacity:0.15}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
-.loading-screen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .5s,visibility .5s}
-.loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.loading-box{text-align:center}
-.loading-box .l-icon{width:60px;height:60px;background:linear-gradient(135deg,var(--gold),var(--orange));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;color:#000;box-shadow:0 10px 30px rgba(245,166,35,.25)}
-.loading-box p{color:var(--text-muted);font-size:14px;margin-bottom:12px}
-.loading-spinner{width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-error{color:var(--red);font-size:13px;margin-top:12px;max-width:320px;line-height:1.5}
-.login-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
-.login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.login-box{background:var(--card);backdrop-filter:blur(40px);border:1px solid var(--border);border-radius:24px;padding:44px 40px;width:440px;max-width:92vw;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);animation:cardIn .6s cubic-bezier(.16,1,.3,1)}
-@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.logo-icon{width:68px;height:68px;background:linear-gradient(135deg,var(--gold),var(--orange));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:30px;color:#000;box-shadow:0 10px 30px rgba(245,166,35,.25)}
-.login-box h2{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.login-box .sub{color:var(--text-muted);font-size:13px;margin-bottom:30px}
-.form-group{margin-bottom:18px;text-align:left}
-.form-group label{display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1.2px}
-.form-group select,.form-group input{width:100%;padding:13px 16px;background:var(--card-light);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;appearance:none}
-.form-group select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f5a623' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
-.form-group select option{background:#12121e;color:var(--text)}
-.form-group input::placeholder{color:var(--text-muted)}
-.form-group select:focus,.form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
-.login-error{color:var(--red);font-size:13px;min-height:20px;margin-bottom:8px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-.btn-full{width:100%}
-.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);pointer-events:none}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;box-shadow:0 4px 20px rgba(245,166,35,.25)}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,166,35,.35)}
-.btn-sm{padding:9px 16px;font-size:13px;border-radius:9px}
-.topbar{position:fixed;top:0;left:0;right:0;z-index:50;height:60px;background:rgba(8,8,13,.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
-.topbar .brand{display:flex;align-items:center;gap:10px}
-.topbar .brand .logo-sm{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--orange));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;flex-shrink:0}
-.topbar .brand .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;white-space:nowrap}
-.topbar .brand .brand-text span{color:var(--text-muted);font-weight:400;font-size:11px;margin-left:4px}
-.topbar .center-nav{display:flex;gap:3px;padding:3px;background:var(--card-light);border-radius:12px;border:1px solid var(--border)}
-.nav-btn{padding:7px 16px;border:none;border-radius:9px;background:transparent;color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.nav-btn.active{background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;box-shadow:0 2px 12px rgba(245,166,35,.25)}
-.nav-btn:not(.active):hover{color:var(--text);background:rgba(255,255,255,.04)}
-.nav-btn .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:none}
-.nav-btn .nav-dot.show{display:block}
-.topbar .user-area{display:flex;align-items:center;gap:8px}
-.user-badge{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:var(--gold-dim);border:1px solid var(--border-gold);font-size:12px;font-weight:600;color:var(--gold)}
-.role-tag{font-size:9px;padding:2px 6px;border-radius:5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.role-tag.cs{background:var(--blue-dim);color:var(--blue)}.role-tag.kasir{background:var(--gold-dim);color:var(--gold)}.role-tag.kks{background:var(--teal-dim);color:var(--teal)}
-.btn-icon{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--card-light);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
-.btn-icon:hover{color:var(--text);border-color:rgba(255,255,255,.12);background:var(--card-hover)}
-.btn-icon.danger:hover{color:var(--red);border-color:rgba(232,54,79,.3);background:var(--red-dim)}
-#btnAdmin{display:none}
-.view{position:fixed;top:60px;left:0;right:0;bottom:0;z-index:10;display:none;opacity:0;transition:opacity .4s}
-.view.active{display:flex;opacity:1}
-.scroll-view{flex-direction:column;overflow-y:auto;padding:24px 28px}
-.scroll-view::-webkit-scrollbar{width:4px}.scroll-view::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
-#viewIzin{align-items:stretch}
-.side-panel{width:260px;background:rgba(8,8,13,.6);backdrop-filter:blur(16px);overflow-y:auto;padding:18px 14px}
-.side-panel::-webkit-scrollbar{width:3px}.side-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
-.panel-left{border-right:1px solid var(--border)}.panel-right{border-left:1px solid var(--border)}
-.panel-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.8px;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.panel-title i{color:var(--gold);font-size:12px}
-.panel-count{margin-left:auto;padding:2px 8px;border-radius:8px;background:var(--gold-dim);color:var(--gold);font-size:10px;font-weight:700}
-.izin-center{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
-.main-card{width:380px;max-width:90vw;background:var(--card);backdrop-filter:blur(30px);border:1px solid var(--border);border-radius:var(--radius);padding:28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04)}
-.main-card h3{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
-.main-card .card-sub{color:var(--text-muted);font-size:13px;margin-bottom:22px}
-.status-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;background:var(--card-light);border:1px solid var(--border);margin-bottom:18px;font-size:14px;transition:all .4s}
-.status-bar.idle{color:var(--text-muted)}.status-bar.on{border-color:rgba(46,204,113,.35);background:var(--green-dim);color:var(--green)}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--text-muted);transition:all .4s}
-.status-bar.on .status-dot{background:var(--green);box-shadow:0 0 10px var(--green)}
-.btn-row{display:flex;gap:10px;margin-top:14px}.btn-row .btn{flex:1}
-.btn-go{background:linear-gradient(135deg,var(--green),#27ae60);color:#fff;box-shadow:0 4px 20px rgba(46,204,113,.25)}
-.btn-go:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(46,204,113,.35)}
-.btn-stop{background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;box-shadow:0 4px 20px rgba(232,54,79,.25)}
-.btn-stop:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,54,79,.35)}
-.izin-item{background:linear-gradient(135deg,rgba(245,166,35,.08),rgba(232,117,26,.04));border:1px solid rgba(245,166,35,.15);border-radius:12px;padding:14px;margin-bottom:8px;animation:slideR .4s cubic-bezier(.16,1,.3,1)}
-@keyframes slideR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.izin-item .ii-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.izin-item .ii-name{font-weight:700;font-size:14px;color:var(--gold)}
-.izin-item .ii-role{font-size:10px;padding:2px 8px;border-radius:5px;background:rgba(245,166,35,.1);color:var(--text-muted);font-weight:600}
-.izin-item .ii-time{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--text);letter-spacing:1px}
-.izin-item .ii-time i{color:var(--gold);font-size:13px}
-.izin-item .ii-counter{font-size:11px;color:var(--text-muted);margin-top:6px}
-.izin-item .ii-counter span{color:var(--gold);font-weight:700}
-.izin-item.over-time{border-color:rgba(232,54,79,.3);background:linear-gradient(135deg,rgba(232,54,79,.08),rgba(192,57,43,.04))}
-.izin-item.over-time .ii-name,.izin-item.over-time .ii-time{color:var(--red)}
-.izin-item.over-time .ii-time i{color:var(--red)}
-.log-item{padding:11px 13px;border-radius:10px;margin-bottom:6px;border-left:3px solid;background:var(--card-light);animation:slideL .4s cubic-bezier(.16,1,.3,1)}
-@keyframes slideL{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
-.log-item.log-aman{border-color:var(--green)}.log-item.log-lewat{border-color:var(--red)}
-.log-item .li-name{font-weight:600;font-size:13px;margin-bottom:2px}
-.log-item.log-aman .li-name{color:var(--green)}.log-item.log-lewat .li-name{color:var(--red)}
-.log-item .li-detail{font-size:11px;color:var(--text-muted)}
-.log-item .li-badge{display:inline-block;padding:1px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-top:4px}
-.log-item.log-aman .li-badge{background:var(--green-dim);color:var(--green)}.log-item.log-lewat .li-badge{background:var(--red-dim);color:var(--red)}
-.empty-state{text-align:center;padding:30px 10px;color:var(--text-muted)}.empty-state i{font-size:28px;margin-bottom:8px;opacity:.25;display:block}.empty-state p{font-size:13px}
-.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:5;background:rgba(8,8,13,.9);backdrop-filter:blur(20px);padding:12px 18px;border-radius:14px;border:1px solid var(--border)}
-.sec-header h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
-.sec-header .hd-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;box-shadow:0 6px 16px rgba(245,166,35,.2)}
-.hd-gold{background:linear-gradient(135deg,var(--gold),var(--orange))}.hd-blue{background:linear-gradient(135deg,var(--blue),#2563eb)}.hd-teal{background:linear-gradient(135deg,var(--teal),#16a085)}
-.sec-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.stat-pill{padding:5px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:5px;font-size:11px}
-.stat-pill .sv{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}.sv.green{color:var(--green)}.sv.gold{color:var(--gold)}
-.stat-pill .sl{color:var(--text-muted);font-size:10px}
-.lock-tag{padding:5px 12px;border-radius:8px;background:var(--blue-dim);border:1px solid rgba(74,158,255,.15);color:var(--blue);font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px}
-.edit-fab{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 16px rgba(245,166,35,.3);transition:all .25s;flex-shrink:0}
-.edit-fab:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(245,166,35,.4)}
-.content-center{display:flex;justify-content:center;align-items:flex-start;gap:16px;flex-wrap:wrap;padding:0 8px}
-.section-block{width:100%;max-width:760px}
-.section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 0;border-bottom:1px solid var(--border)}
-.section-head .gi{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px}
-.gi.ki{background:var(--gold-dim);color:var(--gold)}.gi.ci{background:var(--blue-dim);color:var(--blue)}.gi.ti{background:var(--teal-dim);color:var(--teal)}
-.section-head .gn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700}
-.section-head .gr{font-size:9px;padding:2px 10px;border-radius:5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
-.gr.kr{background:var(--gold-dim);color:var(--gold)}.gr.cr{background:var(--blue-dim);color:var(--blue)}.gr.tr{background:var(--teal-dim);color:var(--teal)}
-.section-head .gc{margin-left:auto;font-size:11px;color:var(--text-muted)}.gc .green{color:var(--green)}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;width:100%;max-width:760px}
-.s-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all .3s;position:relative;overflow:hidden}
-.s-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;transition:opacity .4s;opacity:0}
-.s-card.done::before{opacity:1;background:linear-gradient(90deg,var(--green),#27ae60)}
-.s-card.partial::before{opacity:1;background:linear-gradient(90deg,var(--gold),var(--orange))}
-.s-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);box-shadow:0 12px 36px rgba(0,0,0,.3)}
-.s-card .ct{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.s-card .av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;flex-shrink:0}
-.av-k{background:linear-gradient(135deg,var(--gold),var(--orange))}.av-c{background:linear-gradient(135deg,var(--blue),#2563eb)}.av-t{background:linear-gradient(135deg,var(--teal),#16a085)}
-.s-card .cinfo{flex:1;min-width:0}.s-card .cname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.s-card .cmeta{font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:5px;margin-top:1px}
-.s-card .cmeta .mr{font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;text-transform:uppercase}
-.mr-k{background:var(--gold-dim);color:var(--gold)}.mr-u{background:var(--blue-dim);color:var(--blue)}.mr-t{background:var(--teal-dim);color:var(--teal)}
-.s-card .cprog{margin-left:auto;text-align:right;flex-shrink:0}
-.s-card .pnum{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
-.pnum-g{color:var(--green)}.pnum-o{color:var(--gold)}.pnum-d{color:var(--text-muted)}
-.s-card .plbl{font-size:10px;color:var(--text-muted);margin-top:1px}
-.pbar{height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;margin-bottom:12px}
-.pfill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.16,1,.3,1),background .4s}
-.pf-g{background:linear-gradient(90deg,var(--green),#27ae60);box-shadow:0 0 8px rgba(46,204,113,.3)}
-.pf-o{background:linear-gradient(90deg,var(--gold),var(--orange));box-shadow:0 0 8px rgba(245,166,35,.2)}
-.pf-d{background:rgba(255,255,255,.08)}
-.jcl{display:flex;flex-direction:column;gap:5px}
-.jci{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;background:var(--card-light);border:1px solid transparent;transition:all .25s;user-select:none}
-.jci.ed{cursor:pointer}.jci.ed:hover{border-color:rgba(245,166,35,.25);background:var(--card-hover)}
-.jci.ck{border-color:rgba(46,204,113,.2);background:var(--green-dim)}.jci.ck:hover{border-color:rgba(46,204,113,.35)}
-.jci.ro{cursor:default;opacity:.8}.jci.ro:hover{background:var(--card-light);border-color:transparent}
-.jcb{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;font-size:9px;color:transparent}
-.jci.ck .jcb{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 8px rgba(46,204,113,.3)}
-.jci .jtl{font-size:13px;font-weight:500;transition:color .25s;flex:1}.jci.ck .jtl{color:var(--green)}
-.jci .jtc{font-size:10px;color:var(--text-muted);opacity:0;transition:opacity .2s}.jci.ck .jtc{opacity:1;color:var(--green)}
-.jrt{font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.04);color:var(--text-muted);font-weight:600;flex-shrink:0}
-.jnt{text-align:center;padding:20px;color:var(--text-muted);font-size:13px;border:1px dashed var(--border);border-radius:10px;margin-top:4px}
-.jnt i{display:block;font-size:20px;opacity:.3;margin-bottom:6px}
-.shift-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all .3s}
-.shift-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);box-shadow:0 12px 36px rgba(0,0,0,.3)}
-.shift-card .sc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.shift-display{padding:12px 14px;border-radius:10px;background:var(--card-light);border:1px solid var(--border);width:100%;display:flex;align-items:center;gap:10px}
-.shift-display .sd-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.sd-pagi{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
-.sd-siang{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff}
-.sd-sore{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff}
-.sd-malam{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff}
-.sd-libur{background:rgba(255,255,255,.04);color:var(--text-muted)}
-.shift-display .sd-info{flex:1}
-.shift-display .sd-label{font-size:15px;font-weight:700}
-.shift-display .sd-time{font-size:12px;color:var(--text-muted);margin-top:2px;font-variant-numeric:tabular-nums}
-.shift-display.sd-empty{justify-content:center;color:var(--text-muted);font-size:13px;font-style:italic}
-.shift-display.sd-empty i{color:var(--text-muted);opacity:.4}
-.shift-card .sc-edit{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
-.shift-card .sc-edit select,.shift-card .sc-edit input{flex:1;min-width:120px;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;appearance:none}
-.shift-card .sc-edit select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f5a623' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;flex:0 0 auto;min-width:160px}
-.shift-card .sc-edit select option{background:#12121e;color:var(--text)}
-.shift-card .sc-edit input{min-width:100px}
-.shift-card .sc-edit input::placeholder{color:var(--text-muted)}
-.shift-card .sc-edit select:focus,.shift-card .sc-edit input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
-.profile-wrap{display:flex;justify-content:center;padding:20px 16px}
-.profile-card{width:480px;max-width:100%;background:var(--card);backdrop-filter:blur(30px);border:1px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04)}
-.profile-avatar{width:80px;height:80px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#000;margin:0 auto 16px;box-shadow:0 10px 30px rgba(245,166,35,.2)}
-.profile-name{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;text-align:center;margin-bottom:4px}
-.profile-role{text-align:center;margin-bottom:20px}
-.profile-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
-.pi-box{padding:14px;border-radius:12px;background:var(--card-light);border:1px solid var(--border);text-align:center}
-.pi-box .pi-val{font-size:16px;font-weight:900;font-variant-numeric:tabular-nums;word-break:break-word}.pi-val.green{color:var(--green)}.pi-val.gold{color:var(--gold)}.pi-val.blue{color:var(--blue)}
-.pi-box .pi-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-.profile-section{margin-bottom:20px}
-.profile-section .ps-title{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.profile-section .ps-title i{color:var(--gold);font-size:11px}
-.pw-fields{display:flex;flex-direction:column;gap:10px}
-.pw-fields input{width:100%;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .3s,box-shadow .3s}
-.pw-fields input::placeholder{color:var(--text-muted)}
-.pw-fields input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
-.pw-msg{font-size:12px;min-height:18px;margin-top:4px}.pw-msg.ok{color:var(--green)}.pw-msg.err{color:var(--red)}
-.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
-.modal-overlay.open{opacity:1;visibility:visible}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;width:600px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);transform:translateY(20px) scale(.96);transition:transform .4s cubic-bezier(.16,1,.3,1)}
-.modal-overlay.open .modal{transform:translateY(0) scale(1)}
-.modal::-webkit-scrollbar{width:4px}.modal::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
-.modal h3{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
-.modal h3 .ir{color:var(--red)}.modal h3 .ig{color:var(--gold)}.modal h3 .ib{color:var(--blue)}
-.modal .msub{color:var(--text-muted);font-size:13px;margin-bottom:24px}
-.admin-divider{height:1px;background:var(--border);margin:20px 0;position:relative}
-.admin-divider span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:0 12px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px}
-.admin-stat-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.admin-stat-box{flex:1;min-width:70px;padding:12px;border-radius:10px;background:var(--card-light);border:1px solid var(--border);text-align:center}
-.admin-stat-box .asv{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}.asv.gd{color:var(--gold)}.asv.bl{color:var(--blue)}.asv.tl{color:var(--teal)}
-.admin-stat-box .asl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-.staff-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--card-light);border:1px solid var(--border);margin-bottom:6px;transition:all .25s}
-.staff-card:hover{border-color:rgba(255,255,255,.1);background:var(--card-hover)}
-.staff-card.prot{opacity:.45}
-.sc-av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#000;flex-shrink:0}
-.sc-av.sc-c{background:linear-gradient(135deg,var(--blue),#2563eb)}.sc-av.sc-k{background:linear-gradient(135deg,var(--gold),var(--orange))}.sc-av.sc-t{background:linear-gradient(135deg,var(--teal),#16a085)}
-.sc-info{flex:1;min-width:0}.sc-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-row2{display:flex;align-items:center;gap:6px;margin-top:2px}
-.sc-role{font-size:9px;padding:2px 7px;border-radius:5px;font-weight:700;text-transform:uppercase}
-.sc-role.sr-c{background:var(--blue-dim);color:var(--blue)}.sc-role.sr-k{background:var(--gold-dim);color:var(--gold)}.sc-role.sr-t{background:var(--teal-dim);color:var(--teal)}
-.sc-gmail{font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:4px}.sc-gmail i{font-size:9px;color:var(--gold);opacity:.6}
-.sc-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.sc-admin-badge{font-size:8px;padding:2px 7px;border-radius:5px;background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.bdl{width:30px;height:30px;border-radius:8px;background:var(--red-dim);border:1px solid rgba(232,54,79,.15);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;flex-shrink:0}
-.bdl:hover{background:rgba(232,54,79,.3);transform:scale(1.1)}.bdl:disabled{opacity:.2;cursor:not-allowed;transform:none}
-.bdr{width:30px;height:30px;border-radius:8px;background:var(--blue-dim);border:1px solid rgba(74,158,255,.15);color:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;flex-shrink:0}
-.bdr:hover{background:rgba(74,158,255,.3);transform:scale(1.1)}
-.admin-form{background:var(--card-light);border:1px solid var(--border);border-radius:14px;padding:20px}
-.admin-form .af-title{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-.admin-form .af-title i{color:var(--gold);font-size:11px}
-.af-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.af-fields .af-full{grid-column:1/-1}
-.af-field label{display:block;font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px}
-.af-field input,.af-field select{width:100%;padding:11px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;appearance:none}
-.af-field input:focus,.af-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
-.af-field input::placeholder{color:var(--text-muted)}
-.af-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f5a623' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
-.af-field select option{background:#12121e;color:var(--text)}
-.bcm{margin-top:16px;background:var(--card-light);border:1px solid var(--border);color:var(--text-muted)}
-.jei{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;background:var(--card-light);border:1px solid var(--border);margin-bottom:5px;animation:slideR .25s ease}
-.jei .jen{width:22px;height:22px;border-radius:6px;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.jei .jename{flex:1;font-size:13px;font-weight:600}
-.jed{width:26px;height:26px;border-radius:6px;background:var(--red-dim);border:1px solid rgba(232,54,79,.15);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;flex-shrink:0}
-.jed:hover{background:rgba(232,54,79,.3);transform:scale(1.1)}
-.jem{text-align:center;padding:20px;color:var(--text-muted);font-size:13px}
-.jem i{display:block;font-size:20px;opacity:.3;margin-bottom:6px}
-.kpr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:var(--card-light);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .2s}
-.kpr:hover{border-color:rgba(245,166,35,.25);background:var(--card-hover)}
-.kpr .kpri{display:flex;align-items:center;gap:10px}
-.kpr .kpri .kidx{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.kpr .kprn{font-size:14px;font-weight:600}
-.kpr .kprc{font-size:12px;color:var(--gold);font-weight:600}
-.kpr .kpra{color:var(--text-muted);font-size:12px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--card-light);border:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap;gap:10px}
-.toggle-row .tr-label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;min-width:140px}
-.toggle-row .tr-label i{color:var(--gold);font-size:13px}
-.toggle-group{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.toggle-item{display:flex;align-items:center;gap:6px}
-.toggle-item .ti-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.ti-cs{color:var(--blue)}.ti-kasir{color:var(--gold)}.ti-kks{color:var(--teal)}
-.toggle-switch{position:relative;width:40px;height:22px;cursor:pointer;display:inline-block;flex-shrink:0}
-.toggle-switch input{display:none}
-.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.06);border-radius:11px;transition:all .3s;border:1px solid var(--border)}
-.toggle-slider::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:var(--text-muted);top:2px;left:2px;transition:all .3s}
-.toggle-switch input:checked+.toggle-slider{background:var(--green-dim);border-color:rgba(46,204,113,.3)}
-.toggle-switch input:checked+.toggle-slider::after{transform:translateX(18px);background:var(--green);box-shadow:0 0 8px rgba(46,204,113,.4)}
-.max-izin-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--card-light);border:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap;gap:10px}
-.max-izin-row .mir-label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
-.max-izin-row .mir-label i{color:var(--gold);font-size:13px}
-.max-izin-group{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.max-izin-item{display:flex;align-items:center;gap:6px}
-.max-izin-item .mi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.num-stepper{display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.num-stepper button{width:30px;height:30px;border:none;background:var(--card-light);color:var(--text);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.num-stepper button:hover{background:var(--card-hover);color:var(--gold)}
-.num-stepper .num-val{width:32px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.02);border-left:1px solid var(--border);border-right:1px solid var(--border)}
-.admin-note{font-size:11px;color:var(--text-muted);padding:8px 12px;border-radius:8px;background:rgba(245,166,35,.05);border:1px solid rgba(245,166,35,.1);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.admin-note i{color:var(--gold);font-size:10px}
-.admin-log-list{max-height:280px;overflow-y:auto}
-.admin-log-list::-webkit-scrollbar{width:3px}.admin-log-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
-.day-change-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:400;padding:12px 24px;border-radius:12px;background:rgba(245,166,35,.2);border:1px solid rgba(245,166,35,.3);color:var(--gold);font-size:14px;font-weight:600;backdrop-filter:blur(16px);display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(0,0,0,.35);animation:toastIn .4s cubic-bezier(.16,1,.3,1),toastOut .3s 3s forwards;pointer-events:none}
-.toast-container{position:fixed;top:76px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;backdrop-filter:blur(16px);animation:toastIn .4s cubic-bezier(.16,1,.3,1),toastOut .3s 2.5s forwards;display:flex;align-items:center;gap:8px;box-shadow:0 8px 28px rgba(0,0,0,.35);pointer-events:auto;border:1px solid}
-.toast.success{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.25);color:var(--green)}
-.toast.error{background:rgba(232,54,79,.15);border-color:rgba(232,54,79,.25);color:var(--red)}
-.toast.info{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.25);color:var(--gold)}
-@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateX(30px)}}
-@media(max-width:1100px){.side-panel{width:220px}.main-card{width:340px}}
-@media(max-width:860px){.panel-left{display:none}.main-card{width:320px}}
-@media(max-width:640px){.panel-left,.panel-right{display:none}.main-card{width:calc(100vw - 32px);max-width:400px}.topbar{padding:0 10px;gap:6px}.topbar .brand .brand-text span{display:none}.nav-btn{padding:7px 10px;font-size:11px}.nav-btn .nb-text{display:none}.scroll-view{padding:16px 12px}.card-grid{grid-template-columns:1fr;max-width:400px}.af-fields{grid-template-columns:1fr}.af-fields .af-full{grid-column:1/-1}.profile-info{grid-template-columns:1fr}.profile-card{padding:24px 20px}.toggle-row,.max-izin-row{flex-direction:column;align-items:flex-start}.toggle-group,.max-izin-group{width:100%}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:root {
+  --bg: #f0f2f5;
+  --card: rgba(255,255,255,0.95);
+  --card-light: rgba(255,255,255,0.9);
+  --card-hover: rgba(255,255,255,1);
+  --gold: #e67e22;
+  --gold-dim: rgba(230,126,34,0.1);
+  --orange: #e67e22;
+  --red: #e74c3c;
+  --red-dim: rgba(231,76,60,0.1);
+  --green: #27ae60;
+  --green-dim: rgba(39,174,96,0.1);
+  --blue: #3498db;
+  --blue-dim: rgba(52,152,219,0.1);
+  --teal: #1abc9c;
+  --teal-dim: rgba(26,188,156,0.1);
+  --text: #2c3e50;
+  --text-muted: #7f8c8d;
+  --border: rgba(0,0,0,0.08);
+  --border-gold: rgba(230,126,34,0.2);
+  --shadow: 0 2px 8px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.bg-layer { position: fixed; inset: 0; z-index: 0; background-image: url('https://cdn.areabermain.club/assets/cdn/az5/2026/03/02/20260302/997f37bf3bc90016a5e32ae52406c5c4/background-web-hokbentoto-1.jpg'); background-repeat: no-repeat; background-position: center; background-size: cover; pointer-events: none; }
+.bg-overlay { position: fixed; inset: 0; z-index: 0; background: rgba(0,0,0,0.3); pointer-events: none; }
+.particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; border-radius: 50%; background: var(--gold); opacity: 0; animation: floatUp linear infinite; }
+@keyframes floatUp { 0% { opacity: 0; transform: translateY(100vh) scale(0); } 10% { opacity: 0.15; } 85% { opacity: 0.05; } 100% { opacity: 0; transform: translateY(-10vh) scale(1); } }
+
+.loading-screen { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); transition: opacity .5s; }
+.loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-box { text-align: center; }
+.loading-box .l-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold), var(--orange)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; color: #fff; box-shadow: 0 10px 30px rgba(230,126,34,.25); }
+.loading-box p { color: #fff; font-size: 14px; margin-bottom: 12px; }
+.loading-spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-error { color: var(--red); font-size: 13px; margin-top: 12px; }
+
+.login-screen { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity .5s; }
+.login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.login-box { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 440px; max-width: 92vw; text-align: center; box-shadow: var(--shadow); animation: cardIn .5s ease; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.logo-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--gold), var(--orange)); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; color: #fff; box-shadow: 0 15px 35px rgba(230,126,34,.3); }
+.login-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, var(--gold), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.login-box .sub { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+.form-group { margin-bottom: 18px; text-align: left; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+.form-group input { width: 100%; padding: 13px 16px; background: var(--card-light); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 15px; outline: none; transition: all .2s; }
+.form-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.login-error { color: var(--red); font-size: 12px; min-height: 20px; margin-bottom: 8px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .25s; }
+.btn-full { width: 100%; }
+.btn-gold { background: linear-gradient(135deg, var(--gold), var(--orange)); color: #fff; box-shadow: 0 4px 12px rgba(230,126,34,.25); }
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230,126,34,.35); }
+.btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 10px; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--card-light); border-color: var(--gold); color: var(--gold); }
+
+.topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 64px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+.topbar .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.topbar .brand .logo-sm { width: 38px; height: 38px; background: linear-gradient(135deg, var(--gold), var(--orange)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; box-shadow: 0 4px 12px rgba(230,126,34,.2); flex-shrink: 0; }
+.topbar .brand .brand-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: var(--text); white-space: nowrap; }
+.topbar .brand .brand-text span { color: var(--text-muted); font-weight: 400; font-size: 10px; margin-left: 4px; }
+.topbar .center-nav { display: flex; gap: 4px; background: rgba(0,0,0,0.03); padding: 3px; border-radius: 40px; border: 1px solid var(--border); }
+.nav-btn { padding: 7px 14px; border: none; border-radius: 40px; background: transparent; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.nav-btn.active { background: linear-gradient(135deg, var(--gold), var(--orange)); color: #fff; box-shadow: 0 2px 8px rgba(230,126,34,.2); }
+.nav-btn:not(.active):hover { color: var(--gold); background: var(--gold-dim); }
+.topbar .user-area { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.user-badge { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 40px; background: var(--gold-dim); border: 1px solid var(--border-gold); font-size: 12px; font-weight: 600; color: var(--gold); }
+.role-tag { font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
+.role-tag.cs { background: var(--blue-dim); color: var(--blue); }
+.role-tag.kasir { background: var(--gold-dim); color: var(--gold); }
+.role-tag.kks { background: var(--teal-dim); color: var(--teal); }
+.btn-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn-icon:hover { color: var(--gold); border-color: var(--border-gold); background: var(--gold-dim); }
+#btnAdmin { display: none; }
+
+.view { position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 10; display: none; opacity: 0; transition: opacity .3s; overflow-y: auto; }
+.view.active { display: block; opacity: 1; }
+.scroll-view { padding: 28px 32px; }
+
+/* Izin Layout */
+.izin-layout { display: grid; grid-template-columns: 380px 1fr; gap: 28px; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+.permission-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+.permission-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: var(--text); }
+.permission-card h2 i { color: var(--gold); }
+.quota-info { background: var(--gold-dim); border: 1px solid var(--border-gold); border-radius: var(--radius-sm); padding: 18px; margin: 20px 0; display: flex; align-items: center; gap: 16px; }
+.quota-info i { font-size: 32px; color: var(--gold); }
+.quota-info .quota-text { font-size: 13px; color: var(--text-muted); }
+.quota-info .quota-number { font-size: 32px; font-weight: 800; color: var(--gold); margin-right: 4px; }
+.permission-buttons { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+.btn-permit { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; width: 100%; font-family: inherit; transition: all .2s; }
+.btn-permit:hover { border-color: var(--border-gold); background: var(--card-hover); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.btn-permit.exit { border-left: 4px solid var(--red); }
+.btn-permit.entry { border-left: 4px solid var(--green); }
+.btn-permit .btn-left { display: flex; align-items: center; gap: 12px; }
+.btn-permit .btn-left i { font-size: 20px; }
+.btn-permit.exit .btn-left i { color: var(--red); }
+.btn-permit.entry .btn-left i { color: var(--green); }
+.btn-permit .btn-left span { font-weight: 600; font-size: 15px; }
+.btn-permit .badge { font-size: 11px; padding: 4px 12px; border-radius: 20px; background: rgba(0,0,0,0.03); }
+.status-active { background: var(--green-dim); border: 1px solid rgba(39,174,96,0.3); border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 20px; display: flex; align-items: center; justify-content: space-between; }
+.status-active .status-text { display: flex; align-items: center; gap: 10px; color: var(--green); font-size: 13px; font-weight: 500; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+.history-section { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.history-header { padding: 24px 28px 16px 28px; border-bottom: 1px solid var(--border); }
+.history-header h2 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; color: var(--text); }
+.history-header h2 i { color: var(--gold); }
+.history-header p { font-size: 13px; color: var(--text-muted); }
+.table-wrapper { overflow-x: auto; padding: 0 20px 20px 20px; }
+.izin-table { width: 100%; border-collapse: collapse; }
+.izin-table th { text-align: left; padding: 14px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.izin-table td { padding: 12px 12px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
+.izin-table tr:last-child td { border-bottom: none; }
+.izin-table tr:hover td { background: rgba(0,0,0,0.02); }
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.status-badge.completed { background: var(--green-dim); color: var(--green); }
+.status-badge.active-b { background: var(--gold-dim); color: var(--gold); }
+.status-badge.overdue { background: var(--red-dim); color: var(--red); }
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+
+/* Jobdesk & Shift */
+.sec-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; background: var(--card); backdrop-filter: blur(20px); padding: 16px 24px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); flex-wrap: wrap; gap: 12px; }
+.sec-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text); }
+.sec-header .hd-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; flex-shrink: 0; }
+.hd-gold { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+.hd-blue { background: linear-gradient(135deg, var(--blue), #2563eb); }
+.hd-teal { background: linear-gradient(135deg, var(--teal), #16a085); }
+.hd-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.sec-actions { display: flex; gap: 12px; align-items: center; }
+.stat-pill { padding: 6px 14px; border-radius: 10px; background: var(--card-light); border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.stat-pill .sv { font-weight: 700; font-size: 16px; }
+.stat-pill .sv.green { color: var(--green); }
+.stat-pill .sv.gold { color: var(--gold); }
+.lock-tag { padding: 6px 14px; border-radius: 10px; background: var(--blue-dim); border: 1px solid rgba(52,152,219,0.2); color: var(--blue); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.edit-fab { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--orange)); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 12px rgba(230,126,34,.3); transition: all .2s; }
+.edit-fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(230,126,34,.4); }
+.content-center { display: flex; justify-content: center; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.section-block { width: 100%; max-width: 800px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; width: 100%; }
+.s-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all .2s; box-shadow: var(--shadow); }
+.s-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--border-gold); }
+.s-card .ct { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.s-card .av { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #fff; flex-shrink: 0; }
+.av-k { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+.av-c { background: linear-gradient(135deg, var(--blue), #2563eb); }
+.av-t { background: linear-gradient(135deg, var(--teal), #16a085); }
+.pbar { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin: 16px 0; }
+.pfill { height: 100%; border-radius: 3px; transition: width .5s; }
+.pf-g { background: linear-gradient(90deg, var(--green), #2ecc71); }
+.pf-o { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+.jcl { display: flex; flex-direction: column; gap: 8px; }
+.jci { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(0,0,0,0.02); border: 1px solid transparent; transition: all .2s; }
+.jci.ed { cursor: pointer; }
+.jci.ed:hover { border-color: var(--border-gold); background: var(--card-hover); }
+.jci.ck { border-color: rgba(39,174,96,0.2); background: var(--green-dim); }
+.jcb { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; font-size: 11px; }
+.jci.ck .jcb { background: var(--green); border-color: var(--green); color: #fff; }
+.jci .jtl { font-size: 13px; font-weight: 500; flex: 1; }
+.jci.ck .jtl { color: var(--green); }
+.jrt { font-size: 10px; padding: 2px 8px; border-radius: 12px; background: rgba(0,0,0,0.03); color: var(--text-muted); }
+
+.shift-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all .2s; box-shadow: var(--shadow); }
+.shift-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.shift-display { padding: 14px 16px; border-radius: 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.shift-display .sd-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sd-pagi { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff; }
+.sd-siang { background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; }
+.sd-sore { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+.sd-malam { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+.sd-libur { background: linear-gradient(135deg, #6b7280, #4b5563); color: #fff; }
+.shift-display .sd-label { font-size: 15px; font-weight: 700; }
+.shift-display .sd-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.shift-card .sc-edit { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+.shift-card .sc-edit select, .shift-card .sc-edit input { flex: 1; padding: 10px 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; outline: none; min-width: 120px; }
+.shift-card .sc-edit select:focus, .shift-card .sc-edit input:focus { border-color: var(--gold); }
+.shift-card .sc-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+
+/* ===== STAF DIRECTORY - TABEL STYLE ===== */
+.staf-table-container { background: var(--card); backdrop-filter: blur(20px); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+.staf-table { width: 100%; border-collapse: collapse; }
+.staf-table th { text-align: left; padding: 16px 16px; background: linear-gradient(135deg, var(--gold), var(--orange)); color: #fff; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.staf-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.staf-table tr:hover td { background: rgba(0,0,0,0.02); }
+.staf-table tr:last-child td { border-bottom: none; }
+.staf-name-cell { display: flex; align-items: center; gap: 12px; }
+.staf-avatar-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
+.staf-avatar-sm.cs { background: linear-gradient(135deg, var(--blue), #2563eb); }
+.staf-avatar-sm.kasir { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+.staf-avatar-sm.kks { background: linear-gradient(135deg, var(--teal), #16a085); }
+.staf-name-text { font-weight: 600; }
+.status-badge-staf { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.status-badge-staf.online { background: var(--green-dim); color: var(--green); }
+.status-badge-staf.izin { background: var(--gold-dim); color: var(--gold); }
+.status-dot-sm { width: 6px; height: 6px; border-radius: 50%; }
+.status-badge-staf.online .status-dot-sm { background: var(--green); }
+.status-badge-staf.izin .status-dot-sm { background: var(--gold); animation: pulse 1.5s infinite; }
+.staf-gmail { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.staf-gmail i { font-size: 12px; color: var(--gold); }
+.staf-stats-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.staf-stat-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 24px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); flex: 1; min-width: 150px; }
+.staf-stat-card .ssc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; flex-shrink: 0; }
+.staf-stat-card .ssc-info { flex: 1; }
+.staf-stat-card .ssc-val { font-size: 28px; font-weight: 800; line-height: 1; }
+.staf-stat-card .ssc-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== PROFIL ===== */
+.profile-wrap { display: flex; justify-content: center; padding: 20px; }
+.profile-card { width: 560px; max-width: 100%; background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 36px; box-shadow: var(--shadow); }
+.profile-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; cursor: pointer; }
+.profile-avatar { width: 100%; height: 100%; border-radius: 60px; object-fit: cover; border: 4px solid var(--gold); box-shadow: var(--shadow); background: linear-gradient(135deg, var(--gold), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; color: #fff; overflow: hidden; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-overlay { position: absolute; bottom: 0; right: 0; background: var(--gold); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; border: 2px solid var(--card); transition: all .2s; }
+.avatar-overlay:hover { transform: scale(1.1); background: var(--orange); }
+.profile-name { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+.profile-role { text-align: center; margin-bottom: 24px; }
+.profile-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+.pi-box { padding: 16px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 14px; text-align: center; }
+.pi-box .pi-val { font-size: 16px; font-weight: 900; }
+.pi-box .pi-lbl { font-size: 10px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.profile-section .ps-title { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.pw-fields { display: flex; flex-direction: column; gap: 12px; }
+.pw-fields input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; }
+.pw-fields input:focus { border-color: var(--gold); }
+
+/* ===== MODALS ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all .3s; }
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal { background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; width: 820px; max-width: 94vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.2); transform: scale(0.95); transition: transform .3s; }
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-header { padding: 0; border-radius: 24px 24px 0 0; overflow: hidden; }
+.modal-header-inner { background: linear-gradient(135deg, var(--gold), var(--orange)); padding: 32px 28px 24px 28px; text-align: center; }
+.modal-header-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); }
+.modal-header-inner h3 { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 1px; }
+.modal-header-inner p { color: rgba(255,255,255,0.85); font-size: 13px; margin-top: 6px; }
+.modal-body { padding: 28px; }
+.modal-footer { padding: 16px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; transition: all .2s; }
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.stat-card .stat-value { font-size: 32px; font-weight: 800; color: var(--gold); margin-bottom: 6px; }
+.stat-card .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.section-title { font-size: 16px; font-weight: 600; margin: 24px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid var(--gold); display: inline-block; }
+.role-setting { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-bottom: 10px; }
+.role-setting .role-name { font-weight: 600; min-width: 80px; }
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper button { width: 34px; height: 34px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); cursor: pointer; color: var(--text); font-size: 16px; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+.stepper button:hover { background: var(--gold-dim); color: var(--gold); border-color: var(--gold); }
+.stepper .stepper-value { min-width: 45px; text-align: center; font-weight: 700; font-size: 18px; color: var(--gold); }
+.toggle-group { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.toggle-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: rgba(0,0,0,0.02); border-radius: 12px; }
+.toggle-item label { font-size: 13px; font-weight: 500; }
+.toggle-switch { position: relative; width: 48px; height: 26px; background: var(--border); border-radius: 13px; cursor: pointer; transition: all .3s; flex-shrink: 0; }
+.toggle-switch.active { background: var(--green); }
+.toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: all .3s; }
+.toggle-switch.active::after { left: 24px; }
+.staff-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-bottom: 8px; transition: all .2s; }
+.staff-item:hover { background: var(--card-hover); transform: translateX(4px); }
+.staff-info { display: flex; align-items: center; gap: 14px; }
+.staff-avatar { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; overflow: hidden; position: relative; }
+.staff-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.staff-avatar.cs { background: linear-gradient(135deg, var(--blue), #2563eb); }
+.staff-avatar.kasir { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+.staff-avatar.kks { background: linear-gradient(135deg, var(--teal), #16a085); }
+.staff-details .staff-name { font-weight: 700; margin-bottom: 4px; }
+.staff-details .staff-role { font-size: 11px; color: var(--text-muted); }
+.staff-actions { display: flex; gap: 8px; }
+.staff-actions button { width: 34px; height: 34px; border-radius: 8px; border: none; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+.staff-actions .btn-edit { background: var(--gold-dim); color: var(--gold); }
+.staff-actions .btn-edit:hover { background: var(--gold); color: #fff; }
+.staff-actions .btn-reset { background: var(--blue-dim); color: var(--blue); }
+.staff-actions .btn-reset:hover { background: var(--blue); color: #fff; }
+.staff-actions .btn-delete { background: var(--red-dim); color: var(--red); }
+.staff-actions .btn-delete:hover { background: var(--red); color: #fff; }
+.admin-form { background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row .full-width { grid-column: 1/-1; }
+.form-input { width: 100%; padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: all .2s; }
+.form-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.date-row { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.02); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.date-row input { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+.log-list { max-height: 320px; overflow-y: auto; }
+.log-item-admin { padding: 14px 16px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--green); }
+.log-item-admin.overdue { border-left-color: var(--red); }
+.log-item-admin .log-name { font-weight: 700; margin-bottom: 6px; }
+.log-item-admin .log-detail { font-size: 12px; color: var(--text-muted); }
+.log-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; margin-top: 8px; }
+.log-badge.aman { background: var(--green-dim); color: var(--green); }
+.log-badge.lewat { background: var(--red-dim); color: var(--red); }
+.quick-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.sub-modal-header { padding: 24px 28px; border-bottom: 1px solid var(--border); }
+.sub-modal-header h3 { font-size: 20px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.sub-modal-header p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+.jei { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: rgba(0,0,0,0.02); border-radius: 8px; margin-bottom: 5px; }
+.jed { width: 26px; height: 26px; background: var(--red-dim); border: none; border-radius: 6px; color: var(--red); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.jed:hover { background: var(--red); color: #fff; }
+.kpr { display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(0,0,0,0.02); border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: all .2s; }
+.kpr:hover { border-color: var(--border-gold); background: var(--gold-dim); }
+
+.toast-container { position: fixed; top: 80px; right: 24px; z-index: 300; display: flex; flex-direction: column; gap: 10px; }
+.toast { padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; background: var(--card); backdrop-filter: blur(10px); box-shadow: var(--shadow-hover); animation: toastIn .3s ease, toastOut .3s 2.7s forwards; display: flex; align-items: center; gap: 10px; border-left: 4px solid; }
+.toast.success { border-left-color: var(--green); color: var(--green); }
+.toast.error { border-left-color: var(--red); color: var(--red); }
+.toast.info { border-left-color: var(--gold); color: var(--gold); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(100px); } }
+
+@media (max-width: 900px) {
+  .izin-layout { grid-template-columns: 1fr; padding: 20px; }
+  .scroll-view { padding: 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: 1fr; }
+  .profile-card { padding: 24px; }
+  .profile-avatar-container { width: 100px; height: 100px; }
+  .date-row { flex-direction: column; align-items: stretch; }
+  .nav-btn { padding: 7px 10px; font-size: 11px; }
+  .staf-table th, .staf-table td { padding: 10px 12px; font-size: 12px; }
+  .staf-stat-card { padding: 12px 16px; }
+  .staf-stat-card .ssc-icon { width: 40px; height: 40px; font-size: 16px; }
+  .staf-stat-card .ssc-val { font-size: 22px; }
+}
 </style>
 </head>
 <body>
@@ -308,7 +348,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-box"><div class="l-icon"><i class="fas fa-bolt"></i></div><p>Menghubungkan ke server...</p><div class="loading-spinner"></div><div class="loading-error" id="loadingError"></div></div>
+  <div class="loading-box">
+    <div class="l-icon"><i class="fas fa-bolt"></i></div>
+    <p>Menghubungkan ke server...</p>
+    <div class="loading-spinner"></div>
+    <div class="loading-error" id="loadingError"></div>
+  </div>
 </div>
 
 <div class="login-screen hidden" id="loginScreen">
@@ -316,9 +361,9 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
     <div class="logo-icon"><i class="fas fa-id-badge"></i></div>
     <h2>HOKBEN TOTO</h2>
     <p class="sub">Sistem Izin Keluar & Jobdesk Staf</p>
-    <div class="form-group"><label>Nama Staf</label><select id="loginName"><option value="">-- Pilih Nama --</option></select></div>
+    <div class="form-group"><label>Nama Staf</label><input type="text" id="loginName" placeholder="Masukkan nama lengkap" autocomplete="off"></div>
     <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="Masukkan password" autocomplete="off"></div>
-    <div class="login-error" id="loginError">&nbsp;</div>
+    <div class="login-error" id="loginError"></div>
     <button class="btn btn-full btn-gold" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Masuk</button>
   </div>
 </div>
@@ -327,288 +372,359 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
 <header class="topbar">
   <div class="brand"><div class="logo-sm"><i class="fas fa-bolt"></i></div><div class="brand-text">HOKBEN TOTO <span>STAF</span></div></div>
   <nav class="center-nav">
-    <button class="nav-btn active" data-view="izin" onclick="switchView('izin')"><i class="fas fa-right-from-bracket"></i> <span class="nb-text">Izin</span><span class="nav-dot" id="navDotIzin"></span></button>
-    <button class="nav-btn" data-view="jobdesk" onclick="switchView('jobdesk')"><i class="fas fa-clipboard-list"></i> <span class="nb-text">Jobdesk</span></button>
-    <button class="nav-btn" data-view="shift" onclick="switchView('shift')"><i class="fas fa-clock"></i> <span class="nb-text">Shift</span></button>
-    <button class="nav-btn" data-view="profil" onclick="switchView('profil')"><i class="fas fa-user"></i> <span class="nb-text">Profil</span></button>
+    <button class="nav-btn active" data-view="izin" onclick="switchView('izin')"><i class="fas fa-right-from-bracket"></i> Izin</button>
+    <button class="nav-btn" data-view="jobdesk" onclick="switchView('jobdesk')"><i class="fas fa-clipboard-list"></i> Jobdesk</button>
+    <button class="nav-btn" data-view="shift" onclick="switchView('shift')"><i class="fas fa-clock"></i> Shift</button>
+    <button class="nav-btn" data-view="staf" onclick="switchView('staf')"><i class="fas fa-users"></i> Staf</button>
+    <button class="nav-btn" data-view="profil" onclick="switchView('profil')"><i class="fas fa-user"></i> Profil</button>
   </nav>
   <div class="user-area">
-    <div class="user-badge"><i class="fas fa-user" style="font-size:11px"></i><span id="userName">-</span><span class="role-tag" id="userRoleTag"></span></div>
+    <div class="user-badge"><i class="fas fa-user"></i><span id="userName">-</span><span class="role-tag" id="userRoleTag"></span></div>
     <button class="btn-icon" id="btnAdmin" onclick="openAdmin()" title="Panel Admin"><i class="fas fa-shield-halved"></i></button>
-    <button class="btn-icon danger" onclick="doLogout()" title="Keluar"><i class="fas fa-power-off"></i></button>
+    <button class="btn-icon" onclick="doLogout()" title="Keluar"><i class="fas fa-sign-out-alt"></i></button>
   </div>
 </header>
 
+<!-- VIEW IZIN -->
 <div class="view active" id="viewIzin">
-  <aside class="side-panel panel-left" id="panelLeft"><div class="panel-title"><i class="fas fa-clock-rotate-left"></i> Riwayat <span class="panel-count" id="logCount">0</span></div><div id="logList"></div></aside>
-  <div class="izin-center"><div class="main-card"><h3>Izin Keluar</h3><p class="card-sub" id="cardSub">Keluar sementara dari pos</p><div class="status-bar idle" id="statusBar"><div class="status-dot"></div><span id="statusText">Tidak ada izin aktif</span></div><div id="izinLimitInfo" style="font-size:11px;color:var(--text-muted);margin-bottom:14px;text-align:center"></div><div class="btn-row"><button class="btn btn-go" onclick="mulaiKeluar()"><i class="fas fa-right-from-bracket"></i> Keluar</button><button class="btn btn-stop" onclick="akhiriKeluar()"><i class="fas fa-flag-checkered"></i> End</button></div></div></div>
-  <aside class="side-panel panel-right"><div class="panel-title"><i class="fas fa-person-walking-arrow-right"></i> Sedang Izin <span class="panel-count" id="izinCount">0</span></div><div id="izinList"></div></aside>
+  <div class="izin-layout">
+    <div class="permission-card">
+      <h2><i class="fas fa-door-open"></i> Izin Keluar/Masuk</h2>
+      <p style="color:var(--text-muted);font-size:13px">Batas keluar 15 Menit jangan sampai lewat.</p>
+      <div class="quota-info"><i class="fas fa-ticket-alt"></i><div><div class="quota-text">Sisa kuota izin hari ini</div><div><span class="quota-number" id="quotaRemaining">0</span> / <span id="quotaTotal">0</span></div></div></div>
+      <div class="permission-buttons">
+        <button class="btn-permit exit" onclick="mulaiKeluar()"><div class="btn-left"><i class="fas fa-sign-out-alt"></i><span>Izin Keluar</span></div><div class="badge">Keluar sementara</div></button>
+        <button class="btn-permit entry" onclick="akhiriKeluar()"><div class="btn-left"><i class="fas fa-sign-in-alt"></i><span>Izin Masuk</span></div><div class="badge">Kembali ke pos</div></button>
+      </div>
+      <div id="activeStatus" style="display:none" class="status-active"><div class="status-text"><div class="status-dot"></div><span id="activeText">Sedang izin keluar</span></div><span id="activeDuration" style="font-family:monospace;font-size:16px;font-weight:700">00:00</span></div>
+    </div>
+    <div class="history-section">
+      <div class="history-header"><h2><i class="fas fa-history"></i> Riwayat Izin Hari Ini</h2><p>Daftar lengkap aktivitas izin keluar staf</p></div>
+      <div class="table-wrapper">
+        <table class="izin-table"><thead><tr><th>NAMA</th><th>ROLE</th><th>JAM KELUAR</th><th>JAM MASUK</th><th>DURASI</th><th>STATUS</th></tr></thead>
+        <tbody id="historyBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p></td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- VIEW JOBDESK -->
 <div class="view scroll-view" id="viewJobdesk">
-  <div class="sec-header"><h2><div class="hd-icon hd-gold"><i class="fas fa-clipboard-list"></i></div> JOBSDESK</h2><div class="sec-actions"><div id="jdStats"></div><button class="edit-fab" id="jdEditFab" onclick="openJdPicker()" title="Edit Jobdesk"><i class="fas fa-pen-to-square"></i></button><div class="lock-tag" id="jdLock"><i class="fas fa-lock"></i> Read-only</div></div></div>
+  <div class="sec-header"><h2><div class="hd-icon hd-gold"><i class="fas fa-clipboard-list"></i></div> JOBSDESK</h2><div class="sec-actions"><div id="jdStats"></div><button class="edit-fab" id="jdEditFab" onclick="openJdPicker()"><i class="fas fa-pen-to-square"></i></button><div class="lock-tag" id="jdLock"><i class="fas fa-lock"></i> Read-only</div></div></div>
   <div class="content-center" id="jdCenter"></div>
 </div>
 
+<!-- VIEW SHIFT -->
 <div class="view scroll-view" id="viewShift">
   <div class="sec-header"><h2><div class="hd-icon hd-teal"><i class="fas fa-clock"></i></div> SHIFT KERJA</h2><div class="sec-actions"><div id="shiftStats"></div><div class="lock-tag" id="shiftLock"><i class="fas fa-lock"></i> Read-only</div></div></div>
   <div class="content-center" id="shiftCenter"></div>
 </div>
 
+<!-- ===== VIEW STAF - TABEL STYLE ===== -->
+<div class="view scroll-view" id="viewStaf">
+  <div class="sec-header">
+    <h2><div class="hd-icon hd-purple"><i class="fas fa-address-book"></i></div> DATA STAF</h2>
+    <div class="sec-actions" id="stafHeaderActions"></div>
+  </div>
+  <div id="stafContent"></div>
+</div>
+
+<!-- VIEW PROFIL -->
 <div class="view scroll-view" id="viewProfil">
   <div class="profile-wrap" id="profileWrap"></div>
 </div>
 </div>
 
+<!-- ADMIN MODAL -->
 <div class="modal-overlay" id="adminModal" onclick="if(event.target===this)closeAdmin()">
   <div class="modal">
-    <h3><i class="fas fa-shield-halved ir"></i> Panel Admin</h3>
-    <p class="msub">Kelola staf, peraturan akses, batas izin, dan riwayat</p>
-    <div class="admin-stat-row" id="adminStats"></div>
-    <div class="admin-divider"><span>Batas Izin per Role</span></div>
-    <div class="admin-note"><i class="fas fa-info-circle"></i> Atur maksimal staf yang boleh izin keluar bersamaan per jabatan. 0 = tidak boleh izin sama sekali.</div>
-    <div id="adminMaxIzin"></div>
-    <div class="admin-divider"><span>Peraturan Akses</span></div>
-    <div class="admin-note"><i class="fas fa-info-circle"></i> Admin selalu memiliki akses penuh terlepas dari pengaturan di bawah</div>
-    <div id="adminPeraturan"></div>
-    <div class="admin-divider"><span>Daftar Staf</span></div>
-    <div id="staffList" style="max-height:260px;overflow-y:auto;margin-bottom:4px"></div>
-    <div class="admin-divider"><span>Tambah Staf Baru</span></div>
-    <div class="admin-form">
-      <div class="af-title"><i class="fas fa-user-plus"></i> Formulir Penambahan</div>
-      <div class="af-fields">
-        <div class="af-full af-field"><label>Nama Lengkap</label><input type="text" id="newStaffName" placeholder="Contoh: BUDI SANTOSO" maxlength="50"></div>
-        <div class="af-field"><label>Gmail</label><input type="email" id="newStaffGmail" placeholder="email@gmail.com" maxlength="60"></div>
-        <div class="af-field"><label>Role</label><select id="newStaffRole"><option value="CS">CS</option><option value="KASIR">KASIR</option><option value="KKS">KKS</option></select></div>
+    <div class="modal-header"><div class="modal-header-inner"><div class="modal-header-icon"><i class="fas fa-crown"></i></div><h3>PANEL ADMINISTRATOR</h3><p>Kelola staf, aturan izin, dan pantau aktivitas</p></div></div>
+    <div class="modal-body">
+      <div class="admin-stats" id="adminStats"></div>
+      <div class="section-title"><i class="fas fa-sliders-h"></i> Batas Izin Harian</div><div id="adminMaxIzin"></div>
+      <div class="section-title" style="margin-top:20px"><i class="fas fa-users"></i> Batas Izin Bersamaan</div><div id="adminMaxConcurrent"></div>
+      <div class="section-title" style="margin-top:20px"><i class="fas fa-shield-alt"></i> Peraturan Akses</div><div id="adminPeraturan"></div>
+      <div class="section-title" style="margin-top:20px"><i class="fas fa-user-friends"></i> Daftar Staf</div>
+      <div id="staffList" style="max-height:300px;overflow-y:auto;margin-bottom:16px"></div>
+      <div class="admin-form">
+        <div class="form-row"><div class="full-width"><input type="text" id="newStaffName" class="form-input" placeholder="Nama Lengkap"></div><div><input type="email" id="newStaffGmail" class="form-input" placeholder="Email Gmail"></div><div><select id="newStaffRole" class="form-input"><option value="CS">CS</option><option value="KASIR">KASIR</option><option value="KKS">KKS</option></select></div></div>
+        <button class="btn btn-gold btn-sm" onclick="addStaff()" style="width:100%"><i class="fas fa-plus"></i> Tambah Staf Baru</button>
       </div>
-      <div style="margin-top:14px"><button class="btn btn-full btn-gold btn-sm" onclick="addStaff()"><i class="fas fa-plus"></i> Tambah Staf</button></div>
+      <div class="section-title" style="margin-top:20px"><i class="fas fa-archive"></i> Arsip Riwayat Izin</div>
+      <div class="date-row"><label><i class="fas fa-calendar-alt"></i> Pilih Tanggal:</label><input type="date" id="adminLogDate"><button class="btn btn-gold btn-sm" onclick="loadAdminLogByDate()">Lihat</button><button class="btn btn-outline btn-sm" onclick="resetAdminLogDate()">Hari Ini</button></div>
+      <div class="log-list" id="adminLogList"></div>
+      <div class="section-title" style="margin-top:20px"><i class="fas fa-bolt"></i> Aksi Cepat</div>
+      <div class="quick-actions">
+        <button class="btn btn-outline btn-sm" onclick="forceEndAllIzin()" style="border-color:var(--red);color:var(--red)"><i class="fas fa-power-off"></i> Force End Semua Izin</button>
+        <button class="btn btn-gold btn-sm" onclick="resetAllTodayData()"><i class="fas fa-trash-alt"></i> Reset Data Hari Ini</button>
+      </div>
     </div>
-    <div class="admin-divider"><span>Riwayat Izin Staf Hari Ini</span></div>
-    <div class="admin-log-list" id="adminLogList"></div>
-    <button class="btn btn-full bcm btn-sm" onclick="closeAdmin()"><i class="fas fa-xmark"></i> Tutup</button>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeAdmin()">Tutup Panel</button></div>
   </div>
 </div>
 
+<!-- JOBDESK EDIT MODAL -->
 <div class="modal-overlay" id="jdEditModal" onclick="if(event.target===this)closeJdEdit()">
-  <div class="modal">
-    <h3><i class="fas fa-pen-to-square ig"></i> Edit Jobdesk</h3>
-    <p class="msub" id="jdEditSub">Kelola daftar tugas</p>
-    <div id="jdEditBody"></div>
-    <div class="af-fields af-full" id="jdAddRow" style="display:none;margin-top:12px">
-      <input type="text" id="newJdItem" placeholder="Nama tugas baru..." maxlength="60">
-      <button class="btn btn-gold btn-sm" onclick="addJdItem()" style="flex-shrink:0"><i class="fas fa-plus"></i> Tambah</button>
+  <div class="modal" style="width:500px">
+    <div class="sub-modal-header"><h3><i class="fas fa-pen-to-square"></i> Edit Jobdesk</h3><p id="jdEditSub">Kelola daftar tugas</p></div>
+    <div class="modal-body"><div id="jdEditBody"></div><div id="jdAddRow" style="display:none;margin-top:16px"><input type="text" id="newJdItem" class="form-input" placeholder="Nama tugas baru..." style="margin-bottom:10px"><button class="btn btn-gold btn-sm" onclick="addJdItem()" style="width:100%">Tambah Tugas</button></div></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeJdEdit()">Tutup</button></div>
+  </div>
+</div>
+
+<!-- EDIT STAFF MODAL -->
+<div class="modal-overlay" id="editStaffModal" onclick="if(event.target===this)closeEditStaff()">
+  <div class="modal" style="width:450px">
+    <div class="sub-modal-header"><h3><i class="fas fa-user-edit"></i> Edit Staf</h3><p id="editStaffNameDisplay"></p></div>
+    <div class="modal-body"><div class="form-row"><div class="full-width"><input type="email" id="editStaffGmail" class="form-input" placeholder="Email Gmail"></div><div class="full-width"><input type="text" id="editStaffPass" class="form-input" placeholder="Password Baru (kosongkan jika tidak diubah)"></div></div></div>
+    <div class="modal-footer"><button class="btn btn-gold" onclick="saveEditStaff()">Simpan</button><button class="btn btn-outline" onclick="closeEditStaff()">Batal</button></div>
+  </div>
+</div>
+
+<!-- PHOTO UPLOAD MODAL -->
+<div class="modal-overlay" id="photoModal" onclick="if(event.target===this)closePhotoModal()">
+  <div class="modal" style="width:450px">
+    <div class="sub-modal-header"><h3><i class="fas fa-camera"></i> Upload Foto Profil</h3><p>Pilih foto dari perangkat Anda</p></div>
+    <div class="modal-body">
+      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto()">
+      <div style="text-align:center;padding:20px"><div id="photoPreview" style="width:150px;height:150px;border-radius:75px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;overflow:hidden"><i class="fas fa-user" style="font-size:60px;color:#fff"></i></div><button class="btn btn-gold" onclick="document.getElementById('photoInput').click()"><i class="fas fa-upload"></i> Pilih Foto</button><p style="font-size:12px;color:var(--text-muted);margin-top:16px">Format: JPG, PNG, GIF (Max 2MB)</p></div>
     </div>
-    <button class="btn btn-full bcm btn-sm" onclick="closeJdEdit()"><i class="fas fa-xmark"></i> Tutup</button>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closePhotoModal()">Batal</button></div>
   </div>
 </div>
 
 <script>
 var firebaseConfig={apiKey:"AIzaSyAAoE0BDc4Kidx3b-L_iSxZWwbC-1EWU40",authDomain:"hokben-toto.firebaseapp.com",databaseURL:"https://hokben-toto-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"hokben-toto",storageBucket:"hokben-toto.firebasestorage.app",messagingSenderId:"836614857641",appId:"1:836614857641:web:b953bb729dd5a920aedab8"};
 firebase.initializeApp(firebaseConfig);
-var db=firebase.database();
+var db=firebase.database(),storage=firebase.storage();
 
-var ADMIN_USER="HARIS",DEFAULT_PASS="1",MAX_PER_HARI=4,ALERT_MENIT=15;
+var ADMIN_USER="HARIS",DEFAULT_PASS="1",ALERT_MENIT=15;
 var SHIFT_PRESET=[
-  {label:"PAGI",time:"07:45:00 - 17:45:00",icon:"fa-sun",cls:"sd-pagi"},
-  {label:"SIANG",time:"11:45:00 - 21:45:00",icon:"fa-cloud-sun",cls:"sd-siang"},
-  {label:"SORE",time:"15:45:00 - 01:45:00",icon:"fa-cloud-moon",cls:"sd-sore"},
-  {label:"MALAM",time:"21:45:00 - 07:45:00",icon:"fa-moon",cls:"sd-malam"},
+  {label:"PAGI",time:"07:45 - 17:45",icon:"fa-sun",cls:"sd-pagi"},
+  {label:"SIANG",time:"11:45 - 21:45",icon:"fa-cloud-sun",cls:"sd-siang"},
+  {label:"SORE",time:"15:45 - 01:45",icon:"fa-cloud-moon",cls:"sd-sore"},
+  {label:"MALAM",time:"21:45 - 07:45",icon:"fa-moon",cls:"sd-malam"},
   {label:"LIBUR",time:"Libur",icon:"fa-umbrella-beach",cls:"sd-libur"}
 ];
 var DEFAULT_STAF=[
-  {nama:"HARIS",role:"CS",gmail:"hokben.admin@gmail.com",password:"1"},
-  {nama:"MUHAMMAD RASED PRANATA",role:"CS",gmail:"rased.hokben@gmail.com",password:"1"},
-  {nama:"JOSLEO TUSTANI",role:"CS",gmail:"josleo.hokben@gmail.com",password:"1"},
-  {nama:"WILSON LEO",role:"CS",gmail:"wilson.hokben@gmail.com",password:"1"},
-  {nama:"DAVID MELSEN",role:"KASIR",gmail:"david.hokben@gmail.com",password:"1"},
-  {nama:"LAELA NABILA",role:"KASIR",gmail:"laela.hokben@gmail.com",password:"1"},
-  {nama:"CELVIN GINTING",role:"KASIR",gmail:"celvin.hokben@gmail.com",password:"1"}
+  {nama:"HARIS",role:"CS",gmail:"hokben.admin@gmail.com",password:"1",photoURL:null},
+  {nama:"MUHAMMAD RASED PRANATA",role:"CS",gmail:"rased.hokben@gmail.com",password:"1",photoURL:null},
+  {nama:"JOSLEO TUSTANI",role:"CS",gmail:"josleo.hokben@gmail.com",password:"1",photoURL:null},
+  {nama:"WILSON LEO",role:"CS",gmail:"wilson.hokben@gmail.com",password:"1",photoURL:null},
+  {nama:"DAVID MELSEN",role:"KASIR",gmail:"david.hokben@gmail.com",password:"1",photoURL:null},
+  {nama:"LAELA NABILA",role:"KASIR",gmail:"laela.hokben@gmail.com",password:"1",photoURL:null},
+  {nama:"CELVIN GINTING",role:"KASIR",gmail:"celvin.hokben@gmail.com",password:"1",photoURL:null}
 ];
 var DEFAULT_JD_KASIR={"DAVID MELSEN":["OP EWALLET","DEPO BCA","DEPO BRI/BNI"],"CELVIN GINTING":["DEPO EWALLET DANA","WITHDRAW VIRTUAL BANK","WITHDRAW MANUAL","WITHDRAW VIRTUAL EWALLET"],"LAELA NABILA":["DEPO ALL & VALIDASI","ALL JOBDESK"]};
 var DEFAULT_JD_CS=["LIVE CHAT","LINE UTAMA"];
-var DEFAULT_SETTINGS={editJobdesk:{CS:true,KASIR:false,KKS:false},editShift:{CS:true,KASIR:false,KKS:false},viewIzinLog:{CS:true,KASIR:false,KKS:false},maxIzinPerRole:{CS:1,KASIR:1,KKS:1}};
+var DEFAULT_SETTINGS={editJobdesk:{CS:true,KASIR:false,KKS:false},editShift:{CS:true,KASIR:false,KKS:false},viewIzinLog:{CS:true,KASIR:false,KKS:false},maxIzinPerDay:{CS:4,KASIR:4,KKS:4},maxIzinConcurrent:{CS:2,KASIR:2,KKS:2}};
 
 var daftarStaf=[],jdKasir={},jdCs=[];
 var izinAktif={},hitungHarian={},logIzin=[],jobdeskStatus={},shiftData={};
-var settings={editJobdesk:{CS:true,KASIR:false,KKS:false},editShift:{CS:true,KASIR:false,KKS:false},viewIzinLog:{CS:true,KASIR:false,KKS:false},maxIzinPerRole:{CS:1,KASIR:1,KKS:1}};
+var settings=JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 var currentUser=null,currentView="izin",editJdTarget=null,editingShiftNama=null;
-var storedActiveDate="";
+var storedActiveDate="",currentAdminLogDate="",durationInterval=null;
 
 function getRole(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].role;}return null;}
 function getGmail(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].gmail||"-";}return"-";}
 function getPass(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].password||DEFAULT_PASS;}return DEFAULT_PASS;}
+function getPhotoURL(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].photoURL||null;}return null;}
 function getInitials(n){return n.split(" ").map(function(w){return w[0];}).join("").substring(0,2);}
 function today(){return new Date().toDateString();}
+function todayYMD(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2,"0")+"-"+d.getDate().toString().padStart(2,"0");}
+function formatTime(ts){if(!ts)return"-";var d=new Date(ts);return d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
+function formatDuration(ms){if(!ms)return"-";var m=Math.floor(ms/60000);var s=Math.floor((ms%60000)/1000);return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
 function jdKey(a,b,c){return a+"::"+b+"::"+c;}
 function objToArr(o){if(!o)return[];return Object.keys(o).sort(function(a,b){return Number(a)-Number(b);}).map(function(k){return o[k];});}
 function stafObjToArr(o){if(!o)return[];return Object.keys(o).map(function(k){return o[k];});}
 function arrToObj(a){var o={};for(var i=0;i<a.length;i++)o[i]=a[i];return o;}
-function jdKasirToObj(){var o={};for(var n in jdKasir)o[n]=arrToObj(jdKasir[n]);return o;}
-function canEditJd(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return!!(settings.editJobdesk&&settings.editJobdesk[r]);}
-function canEditShift(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return!!(settings.editShift&&settings.editShift[r]);}
-function canViewIzinLog(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return!!(settings.viewIzinLog&&settings.viewIzinLog[r]);}
-function getMaxIzin(role){if(!settings.maxIzinPerRole)return 1;return settings.maxIzinPerRole[role]!==undefined?settings.maxIzinPerRole[role]:1;}
+function canEditJd(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editJobdesk&&settings.editJobdesk[r]);}
+function canEditShift(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editShift&&settings.editShift[r]);}
+function getMaxPerDay(role){if(settings.maxIzinPerDay&&settings.maxIzinPerDay[role]!==undefined)return Number(settings.maxIzinPerDay[role]);return 4;}
+function getMaxConcurrent(role){if(settings.maxIzinConcurrent&&settings.maxIzinConcurrent[role]!==undefined)return Number(settings.maxIzinConcurrent[role]);return 2;}
 function countIzinByRole(role){var c=0;for(var n in izinAktif){if(izinAktif[n].jabatan===role)c++;}return c;}
-function avClass(r){return r==="KASIR"?"av-k":r==="CS"?"av-c":"av-t";}
-function mrClass(r){return r==="KASIR"?"mr-k":r==="CS"?"mr-u":"mr-t";}
-function scAvClass(r){return r==="KASIR"?"sc-k":r==="CS"?"sc-c":"sc-t";}
-function srClass(r){return r==="KASIR"?"sr-k":r==="CS"?"sr-c":"sr-t";}
-function giClass(r){return r==="KASIR"?"ki":r==="CS"?"ci":"ti";}
-function grClass(r){return r==="KASIR"?"kr":r==="CS"?"cr":"tr";}
-function settingLabel(k){return k==="editJobdesk"?"Edit Jobdesk":k==="editShift"?"Edit Shift":"Lihat Riwayat Izin";}
-function settingIcon(k){return k==="editJobdesk"?"fa-clipboard-list":k==="editShift"?"fa-clock":"fa-clock-rotate-left";}
 function findPreset(val){if(!val)return null;var v=val.trim().toUpperCase();for(var i=0;i<SHIFT_PRESET.length;i++){if(v.indexOf(SHIFT_PRESET[i].label)!==-1||v===SHIFT_PRESET[i].time.toUpperCase())return SHIFT_PRESET[i];}return null;}
 
-function showToast(msg,type){type=type||"info";var c=document.getElementById("toastContainer"),t=document.createElement("div");t.className="toast "+type;var ic={success:"fa-circle-check",error:"fa-circle-exclamation",info:"fa-circle-info"};t.innerHTML='<i class="fas '+(ic[type]||ic.info)+'"></i> '+msg;c.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove();},3000);}
-function showDayChangeToast(){var el=document.createElement("div");el.className="day-change-toast";el.innerHTML='<i class="fas fa-rotate"></i> Hari berganti \u2014 semua izin aktif telah direset otomatis';document.body.appendChild(el);setTimeout(function(){if(el.parentNode)el.remove();},3500);}
+function showToast(msg,type){type=type||"info";var c=document.getElementById("toastContainer"),t=document.createElement("div");t.className="toast "+type;var ic={success:"fa-check-circle",error:"fa-exclamation-circle",info:"fa-info-circle"};t.innerHTML='<i class="fas '+(ic[type]||ic.info)+'"></i> '+msg;c.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove();},3000);}
 
 (function(){var c=document.getElementById("particles");for(var i=0;i<14;i++){var p=document.createElement("div");p.className="particle";var s=Math.random()*3+1;p.style.width=s+"px";p.style.height=s+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=(Math.random()*14+8)+"s";p.style.animationDelay=(Math.random()*12)+"s";c.appendChild(p);}})();
 
-function populateLogin(){var sel=document.getElementById("loginName");while(sel.options.length>1)sel.remove(1);for(var i=0;i<daftarStaf.length;i++){var o=document.createElement("option");o.value=daftarStaf[i].nama;o.textContent=daftarStaf[i].nama+" ("+daftarStaf[i].role+")";sel.appendChild(o);}}
-document.getElementById("loginPass").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
-function doLogin(){var name=document.getElementById("loginName").value,pass=document.getElementById("loginPass").value,err=document.getElementById("loginError");if(!name){err.textContent="Pilih nama staf terlebih dahulu";return;}if(pass!==getPass(name)){err.textContent="Password salah";document.getElementById("loginPass").value="";return;}err.innerHTML="&nbsp;";currentUser=name;document.getElementById("loginScreen").classList.add("hidden");document.getElementById("appContainer").style.display="block";var role=getRole(name),tag=document.getElementById("userRoleTag");tag.textContent=role;tag.className="role-tag "+(role||"").toLowerCase();document.getElementById("cardSub").textContent="Login sebagai "+name+" \u2014 "+role;document.getElementById("btnAdmin").style.display=(name===ADMIN_USER)?"flex":"none";switchView("izin");showToast("Selamat datang, "+name,"success");}
-function doLogout(){currentUser=null;document.getElementById("appContainer").style.display="none";document.getElementById("loginScreen").classList.remove("hidden");document.getElementById("loginPass").value="";}
-function switchView(view){currentView=view;document.querySelectorAll(".nav-btn").forEach(function(b){b.classList.toggle("active",b.dataset.view===view);});document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active");v.style.display="none";});var el=document.getElementById("view"+view.charAt(0).toUpperCase()+view.slice(1));el.style.display="flex";requestAnimationFrame(function(){el.classList.add("active");});if(view==="izin"){updateIzinPanelVisibility();renderIzinLimitInfo();}if(view==="jobdesk")renderJobdesk();if(view==="shift")renderShift();if(view==="profil")renderProfil();}
-
-/* ===== DAY CHANGE DETECTION ===== */
-function checkDayChange(){
-  var todayStr=today();
-  if(storedActiveDate&&storedActiveDate!==todayStr){
-    db.ref("izinAktif").remove();
-    showDayChangeToast();
+// LOGIN MANUAL (TANPA DROPDOWN)
+function doLogin(){
+  var name = document.getElementById("loginName").value.trim().toUpperCase();
+  var pass = document.getElementById("loginPass").value;
+  var err = document.getElementById("loginError");
+  
+  if(!name){ err.textContent = "Masukkan nama staf"; return; }
+  
+  var staff = null;
+  for(var i=0;i<daftarStaf.length;i++){
+    if(daftarStaf[i].nama === name){ staff = daftarStaf[i]; break; }
   }
-  db.ref("activeDate").set(todayStr);
+  if(!staff){ err.textContent = "Nama staf tidak terdaftar"; document.getElementById("loginPass").value=""; return; }
+  if(pass !== (staff.password || DEFAULT_PASS)){ err.textContent = "Password salah"; document.getElementById("loginPass").value=""; return; }
+  
+  err.textContent = "";
+  currentUser = name;
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("appContainer").style.display = "block";
+  var role = staff.role;
+  var tag = document.getElementById("userRoleTag");
+  tag.textContent = role;
+  tag.className = "role-tag " + (role || "").toLowerCase();
+  document.getElementById("userName").textContent = name;
+  document.getElementById("btnAdmin").style.display = (name === ADMIN_USER) ? "flex" : "none";
+  switchView("izin");
+  showToast("Selamat datang, " + name, "success");
 }
 
-/* ===== IZIN ===== */
-function renderIzinLimitInfo(){
-  if(!currentUser)return;var role=getRole(currentUser),mx=getMaxIzin(role),cur=countIzinByRole(role);
-  document.getElementById("izinLimitInfo").textContent="Batas izin "+role+": "+cur+" / "+mx+" orang";
-}
-function mulaiKeluar(){
-  var nama=currentUser,jabatan=getRole(nama);if(!jabatan){showToast("Role tidak ditemukan","error");return;}
-  var cnt=hitungHarian[nama]||0;if(cnt>=MAX_PER_HARI){showToast(nama+" sudah izin "+MAX_PER_HARI+"x hari ini","error");return;}
-  if(izinAktif[nama]){showToast("Anda sedang dalam izin keluar","error");return;}
-  var maxR=getMaxIzin(jabatan),curR=countIzinByRole(jabatan);
-  if(maxR<=0){showToast("Izin untuk jabatan "+jabatan+" saat ini dinonaktifkan (0)","error");return;}
-  if(curR>=maxR){showToast("Batas izin "+jabatan+" tercapai ("+maxR+" orang). Sedang ada: "+curR,"error");return;}
-  var now=Date.now(),u={};u["izinAktif/"+nama]={jabatan:jabatan,mulai:now};db.ref().update(u);
-  db.ref("logIzin/"+today()).push({nama:nama,jabatan:jabatan,mulai:now,selesai:null});
-  db.ref("hitungHarian/"+today()+"/"+nama).transaction(function(v){return(v||0)+1;});
-  showToast(nama+" mulai izin keluar","success");renderIzinLimitInfo();
-}
-function akhiriKeluar(){
-  var nama=currentUser;if(!izinAktif[nama]){showToast("Anda tidak sedang dalam izin","error");return;}
-  var jabatan=izinAktif[nama].jabatan,u={};u["izinAktif/"+nama]=null;db.ref().update(u);
-  db.ref("logIzin/"+today()).orderByChild("nama").equalTo(nama).once("value",function(snap){var data=snap.val();if(!data)return;var keys=Object.keys(data);for(var i=keys.length-1;i>=0;i--){if(data[keys[i]].selesai===null){db.ref("logIzin/"+today()+"/"+keys[i]+"/selesai").set(Date.now());break;}}});
-  showToast("Izin "+nama+" telah selesai","success");renderIzinLimitInfo();
-}
-function updateIzinPanelVisibility(){var pl=document.getElementById("panelLeft");if(!pl)return;pl.style.display=(canViewIzinLog()&&window.innerWidth>860)?"block":"none";}
-function renderIzin(){
-  var now=Date.now(),keys=Object.keys(izinAktif);
-  document.getElementById("navDotIzin").classList.toggle("show",keys.length>0);
-  document.getElementById("izinCount").textContent=keys.length;
-  var el=document.getElementById("izinList");
-  if(!keys.length){el.innerHTML='<div class="empty-state"><i class="fas fa-mug-hot"></i><p>Semua staf di pos</p></div>';}
-  else{var h="";for(var i=0;i<keys.length;i++){var n=keys[i],d=izinAktif[n],df=(now-d.mulai)/60000,m=Math.floor(df),s=Math.floor((df*60)%60),over=df>ALERT_MENIT,c=hitungHarian[n]||0;h+='<div class="izin-item'+(over?' over-time':'')+'"><div class="ii-top"><span class="ii-name">'+n+'</span><span class="ii-role">'+d.jabatan+'</span></div><div class="ii-time"><i class="fas fa-stopwatch"></i>'+String(m).padStart(2,"0")+':'+String(s).padStart(2,"0")+'</div><div class="ii-counter">Izin ke-<span>'+c+'</span> / '+MAX_PER_HARI+' hari ini</div></div>';}el.innerHTML=h;}
-  if(canViewIzinLog()&&window.innerWidth>860){
-    var sorted=logIzin.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});
-    document.getElementById("logCount").textContent=sorted.length;var le=document.getElementById("logList");
-    if(!sorted.length){le.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat</p></div>';}
-    else{var lh="";for(var j=0;j<sorted.length;j++){var l=sorted[j],t=l.selesai?l.selesai:l.mulai,ld=(t-l.mulai)/60000,w1=new Date(l.mulai).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),w2=l.selesai?new Date(l.selesai).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):"...",lo=ld>ALERT_MENIT,lc=lo?"log-lewat":"log-aman",lb=lo?"LEWAT BATAS":"AMAN";lh+='<div class="log-item '+lc+'"><div class="li-name">'+l.nama+'</div><div class="li-detail">'+w1+' \u2014 '+w2+' \u00B7 '+(l.jabatan||"")+'</div><div class="li-badge">'+lb+'</div></div>';}le.innerHTML=lh;}
-  }
-  var bar=document.getElementById("statusBar"),txt=document.getElementById("statusText");
-  if(izinAktif[currentUser]){bar.className="status-bar on";txt.textContent=currentUser+" sedang izin keluar...";}else{bar.className="status-bar idle";txt.textContent="Tidak ada izin aktif";}
-}
-setInterval(renderIzin,1000);
+document.getElementById("loginPass").addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
 
-/* ===== JOBSDESK ===== */
-document.getElementById("jdCenter").addEventListener("click",function(e){var it=e.target.closest(".jci.ed");if(!it)return;var key=it.getAttribute("data-jdk");if(!key)return;db.ref("jobdeskStatus/"+today()+"/"+key).set(jobdeskStatus[key]?null:true);});
-function renderJobdesk(){var editable=canEditJd(),totalDone=0,totalAll=0;var kasirList=[],csList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}document.getElementById("jdEditFab").style.display=editable?"flex":"none";document.getElementById("jdLock").style.display=editable?"none":"flex";var html="";
-  if(kasirList.length){var gD=0,gA=0,cards="";for(var ki=0;ki<kasirList.length;ki++){var kn=kasirList[ki],kitems=jdKasir[kn]||[],kdone=0;for(var kj=0;kj<kitems.length;kj++){if(jobdeskStatus[jdKey(kn,kitems[kj],kj)])kdone++;}gD+=kdone;gA+=kitems.length;totalDone+=kdone;totalAll+=kitems.length;cards+=buildJdCard(kn,"KASIR",kitems,kdone,editable);}html+='<div class="section-block"><div class="section-head"><div class="gi ki"><i class="fas fa-cash-register"></i></div><span class="gn">KASIR</span><span class="gr kr">KASIR</span><span class="gc" style="margin-left:auto"><span class="green">'+gD+'</span> / '+gA+'</span></div><div class="card-grid">'+cards+'</div></div>';}
-  if(csList.length){var cgD=0,cgA=0,cc="";for(var ci=0;ci<csList.length;ci++){var cn=csList[ci],cd=0;for(var cj=0;cj<jdCs.length;cj++){if(jobdeskStatus[jdKey(cn,jdCs[cj],cj)])cd++;}cgD+=cd;cgA+=jdCs.length;totalDone+=cd;totalAll+=jdCs.length;cc+=buildJdCard(cn,"CS",jdCs,cd,editable);}html+='<div class="section-block"><div class="section-head"><div class="gi ci"><i class="fas fa-headset"></i></div><span class="gn">CS</span><span class="gr cr">CS</span><span class="gc" style="margin-left:auto"><span class="green">'+cgD+'</span> / '+cgA+'</span></div><div class="card-grid">'+cc+'</div></div>';}
-  if(kksList.length){var tgD=0,tgA=0,tc="";for(var ti=0;ti<kksList.length;ti++){var tn=kksList[ti],td=0;for(var tj=0;tj<jdCs.length;tj++){if(jobdeskStatus[jdKey(tn,jdCs[tj],tj)])td++;}tgD+=td;tgA+=jdCs.length;totalDone+=td;totalAll+=jdCs.length;tc+=buildJdCard(tn,"KKS",jdCs,td,false);}html+='<div class="section-block"><div class="section-head"><div class="gi ti"><i class="fas fa-user-gear"></i></div><span class="gn">KKS</span><span class="gr tr">KKS</span><span class="gc" style="margin-left:auto"><span class="green">'+tgD+'</span> / '+tgA+'</span></div><div class="card-grid">'+tc+'</div></div>';}
-  document.getElementById("jdCenter").innerHTML=html;var pct=totalAll?Math.round(totalDone/totalAll*100):0;document.getElementById("jdStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalDone+'</span><span class="sl">Selesai</span></div><div class="stat-pill"><span class="sv gold">'+pct+'%</span><span class="sl">Progress</span></div>';}
-function buildJdCard(nama,roleLabel,items,done,editable){var total=items.length,pct=total?Math.round(done/total*100):0,sc=pct===100?"done":pct>0?"partial":"",nc=pct===100?"pnum-g":pct>0?"pnum-o":"pnum-d",fc=pct===100?"pf-g":pct>0?"pf-o":"pf-d",ih="";if(!total){ih='<div class="jnt"><i class="fas fa-clipboard"></i>Belum ada tugas ditugaskan</div>';}else{for(var i=0;i<items.length;i++){var key=jdKey(nama,items[i],i),ck=!!jobdeskStatus[key];ih+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span class="jtl">'+items[i]+'</span>'+(ck?'<i class="fas fa-circle-check jtc"></i>':'')+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}}return'<div class="s-card '+sc+'"><div class="ct"><div class="av '+avClass(roleLabel)+'">'+getInitials(nama)+'</div><div class="cinfo"><div class="cname">'+nama+'</div><div class="cmeta"><span class="mr '+mrClass(roleLabel)+'">'+roleLabel+'</span></div></div><div class="cprog"><div class="pnum '+nc+'">'+done+'<span style="font-size:13px;font-weight:400;color:var(--text-muted)">/'+total+'</span></div><div class="plbl">'+pct+'%</div></div></div><div class="pbar"><div class="pfill '+fc+'" style="width:'+pct+'%"></div></div><div class="jcl">'+ih+'</div></div>';}
+function doLogout(){ currentUser=null; document.getElementById("appContainer").style.display="none"; document.getElementById("loginScreen").classList.remove("hidden"); document.getElementById("loginName").value=""; document.getElementById("loginPass").value=""; if(durationInterval)clearInterval(durationInterval); }
+function switchView(view){ currentView=view; document.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.view===view); }); document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); }); var el=document.getElementById("view"+view.charAt(0).toUpperCase()+view.slice(1)); if(el)el.classList.add("active"); if(view==="izin")renderIzinUI(); if(view==="jobdesk")renderJobdesk(); if(view==="shift")renderShift(); if(view==="staf")renderStaf(); if(view==="profil")renderProfil(); }
+function checkDayChange(){ var todayStr=today(); if(storedActiveDate&&storedActiveDate!==todayStr){ db.ref("izinAktif").remove(); showToast("Hari berganti - semua izin aktif direset","info"); } db.ref("activeDate").set(todayStr); storedActiveDate=todayStr; }
 
-/* ===== EDIT JOBDESK ===== */
-function openJdPicker(){if(!canEditJd()){showToast("Anda tidak memiliki akses edit Jobdesk","error");return;}document.getElementById("jdEditModal").classList.add("open");document.getElementById("jdAddRow").style.display="none";document.getElementById("jdEditSub").textContent="Pilih section untuk diedit";editJdTarget=null;var h='<p style="color:var(--text-muted);font-size:13px;margin-bottom:14px">Pilih section yang ingin diedit jobdesk-nya:</p>';var csList=daftarStaf.filter(function(s){return s.role==="CS";});if(csList.length){h+='<div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px"><i class="fas fa-headset" style="font-size:10px"></i> CS (berlaku semua CS)</div>';h+='<div class="kpr" data-pick="cs::__all__"><div class="kpri"><div class="kidx" style="background:var(--blue-dim);color:var(--blue)">CS</div><span class="kprn">Jobdesk CS</span></div><span class="kprc">'+jdCs.length+' tugas</span><i class="fas fa-chevron-right kpra"></i></div>';}var kasirList=daftarStaf.filter(function(s){return s.role==="KASIR";});if(kasirList.length){h+='<div style="font-size:11px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 6px"><i class="fas fa-cash-register" style="font-size:10px"></i> Kasir (per individu)</div>';for(var i=0;i<kasirList.length;i++){var kn=kasirList[i].nama,cnt=(jdKasir[kn]||[]).length;h+='<div class="kpr" data-pick="kasir::'+kn+'"><div class="kpri"><div class="kidx" style="background:var(--gold-dim);color:var(--gold)">'+(i+1)+'</div><span class="kprn">'+kn+'</span></div><span class="kprc">'+cnt+' tugas</span><i class="fas fa-chevron-right kpra"></i></div>';}}document.getElementById("jdEditBody").innerHTML=h;}
-document.getElementById("jdEditBody").addEventListener("click",function(e){var pr=e.target.closest(".kpr");if(pr){var pick=pr.getAttribute("data-pick");if(!pick)return;var parts=pick.split("::");enterEditMode(parts[0],parts[1]);return;}var db2=e.target.closest(".jed");if(db2){var idx=parseInt(db2.getAttribute("data-idx"));if(!isNaN(idx))removeJdItem(idx);}});
+/* IZIN */
+function renderIzinUI(){
+  if(!currentUser)return;var role=getRole(currentUser);var used=hitungHarian[currentUser]||0;var max=getMaxPerDay(role);
+  document.getElementById("quotaRemaining").textContent=max-used;document.getElementById("quotaTotal").textContent=max;
+  var active=izinAktif[currentUser];var activeDiv=document.getElementById("activeStatus");
+  if(active){activeDiv.style.display="flex";document.getElementById("activeText").textContent="Sedang izin keluar ("+active.jabatan+")";var updateDur=function(){document.getElementById("activeDuration").textContent=formatDuration(Date.now()-active.mulai);};updateDur();if(durationInterval)clearInterval(durationInterval);durationInterval=setInterval(updateDur,1000);}else{activeDiv.style.display="none";if(durationInterval)clearInterval(durationInterval);}
+  var sorted=logIzin.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});var tbody=document.getElementById("historyBody");
+  if(!sorted.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p></td></tr>';return;}
+  var html="";for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:Date.now();var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var status="",statusClass="";if(!l.selesai){status="Aktif";statusClass="active-b";}else if((endTime-l.mulai)>ALERT_MENIT*60000){status="Overdue";statusClass="overdue";}else{status="Selesai";statusClass="completed";}html+='<tr><td><strong>'+l.nama+'</strong></td><td><span class="role-tag '+(l.jabatan||"").toLowerCase()+'">'+(l.jabatan||"-")+'</span></td><td>'+w1+'</td><td>'+w2+'</td><td style="font-family:monospace">'+durasiStr+'</td><td><span class="status-badge '+statusClass+'">'+status+'</span></td></tr>';}tbody.innerHTML=html;
+}
+function mulaiKeluar(){var nama=currentUser,jabatan=getRole(nama);if(!jabatan){showToast("Role tidak ditemukan","error");return;}var cnt=hitungHarian[nama]||0,maxDay=getMaxPerDay(jabatan);if(cnt>=maxDay){showToast(nama+" sudah izin "+maxDay+"x hari ini","error");return;}if(izinAktif[nama]){showToast("Anda sedang dalam izin keluar","error");return;}var maxConc=getMaxConcurrent(jabatan),curConc=countIzinByRole(jabatan);if(maxConc<=0){showToast("Izin untuk jabatan "+jabatan+" saat ini dinonaktifkan (0)","error");return;}if(curConc>=maxConc){showToast("Batas izin bersamaan "+jabatan+" tercapai ("+maxConc+" orang)","error");return;}var now=Date.now();var key=nama+"_"+now;var updates={};updates["izinAktif/"+nama]={jabatan:jabatan,mulai:now,key:key};updates["logIzin/"+today()+"/"+key]={nama:nama,jabatan:jabatan,mulai:now,selesai:null};updates["hitungHarian/"+today()+"/"+nama]=(cnt+1);db.ref().update(updates);showToast(nama+" mulai izin keluar","success");}
+function akhiriKeluar(){var nama=currentUser;if(!izinAktif[nama]){showToast("Anda tidak sedang dalam izin","error");return;}var now=Date.now();var activeData=izinAktif[nama];var key=activeData.key;if(key){var updates={};updates["izinAktif/"+nama]=null;updates["logIzin/"+today()+"/"+key+"/selesai"]=now;db.ref().update(updates);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");}else{db.ref("izinAktif/"+nama).remove();db.ref("logIzin/"+today()).orderByChild("nama").equalTo(nama).once("value",function(snap){var data=snap.val();if(!data)return;var keys=Object.keys(data);for(var i=keys.length-1;i>=0;i--){if(data[keys[i]].selesai===null){db.ref("logIzin/"+today()+"/"+keys[i]+"/selesai").set(now);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");break;}}});}}
+function forceEndAllIzin(){if(currentUser!==ADMIN_USER)return;db.ref("izinAktif").remove();showToast("Semua izin aktif telah di-force end","success");}
+function resetAllTodayData(){if(currentUser!==ADMIN_USER)return;if(confirm("RESET DATA HARI INI?")){db.ref("izinAktif").remove();db.ref("hitungHarian/"+today()).remove();showToast("Data izin hari ini telah direset","success");}}
+
+/* JOBSDESK - ringkas */
+function renderJobdesk(){
+  var editable=canEditJd();var totalDone=0,totalAll=0;var kasirList=[],csList=[],kksList=[];
+  for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}
+  document.getElementById("jdEditFab").style.display=editable?"flex":"none";document.getElementById("jdLock").style.display=editable?"none":"flex";var html="";
+  if(kasirList.length){var gD=0,gA=0;var cards="";for(var ki=0;ki<kasirList.length;ki++){var kn=kasirList[ki];var kitems=jdKasir[kn]||[];var kdone=0;for(var kj=0;kj<kitems.length;kj++){if(jobdeskStatus[jdKey(kn,kitems[kj],kj)])kdone++;}gD+=kdone;gA+=kitems.length;totalDone+=kdone;totalAll+=kitems.length;cards+='<div class="s-card"><div class="ct"><div class="av av-k">'+getInitials(kn)+'</div><div><div>'+kn+'</div><div style="font-size:11px;color:var(--text-muted)">KASIR</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(kitems.length?Math.round(kdone/kitems.length*100):0)+'%"></div></div><div class="jcl">';for(var kj=0;kj<kitems.length;kj++){var key=jdKey(kn,kitems[kj],kj);var ck=!!jobdeskStatus[key];cards+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+kitems[kj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}cards+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--gold)"><i class="fas fa-cash-register"></i> KASIR</h3><div class="card-grid">'+cards+'</div></div>';}
+  if(csList.length){var cgD=0,cgA=0;var cc="";for(var ci=0;ci<csList.length;ci++){var cn=csList[ci];var cd=0;for(var cj=0;cj<jdCs.length;cj++){if(jobdeskStatus[jdKey(cn,jdCs[cj],cj)])cd++;}cgD+=cd;cgA+=jdCs.length;totalDone+=cd;totalAll+=jdCs.length;cc+='<div class="s-card"><div class="ct"><div class="av av-c">'+getInitials(cn)+'</div><div><div>'+cn+'</div><div style="font-size:11px;color:var(--text-muted)">CS</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(jdCs.length?Math.round(cd/jdCs.length*100):0)+'%"></div></div><div class="jcl">';for(var cj=0;cj<jdCs.length;cj++){var key=jdKey(cn,jdCs[cj],cj);var ck=!!jobdeskStatus[key];cc+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+jdCs[cj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}cc+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--blue)"><i class="fas fa-headset"></i> CS</h3><div class="card-grid">'+cc+'</div></div>';}
+  if(kksList.length){var tgD=0,tgA=0;var tc="";for(var ti=0;ti<kksList.length;ti++){var tn=kksList[ti];var td=0;for(var tj=0;tj<jdCs.length;tj++){if(jobdeskStatus[jdKey(tn,jdCs[tj],tj)])td++;}tgD+=td;tgA+=jdCs.length;totalDone+=td;totalAll+=jdCs.length;tc+='<div class="s-card"><div class="ct"><div class="av av-t">'+getInitials(tn)+'</div><div><div>'+tn+'</div><div style="font-size:11px;color:var(--text-muted)">KKS</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(jdCs.length?Math.round(td/jdCs.length*100):0)+'%"></div></div><div class="jcl">';for(var tj=0;tj<jdCs.length;tj++){var key=jdKey(tn,jdCs[tj],tj);var ck=!!jobdeskStatus[key];tc+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+jdCs[tj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}tc+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--teal)"><i class="fas fa-user-gear"></i> KKS</h3><div class="card-grid">'+tc+'</div></div>';}
+  document.getElementById("jdCenter").innerHTML=html||'<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>Belum ada data jobdesk</p></div>';
+  var pct=totalAll?Math.round(totalDone/totalAll*100):0;document.getElementById("jdStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalDone+'</span><span class="sl">Selesai</span></div><div class="stat-pill"><span class="sv gold">'+pct+'%</span><span class="sl">Progress</span></div>';
+}
+document.getElementById("jdCenter").addEventListener("click",function(e){var it=e.target.closest(".jci.ed");if(!it)return;var key=it.getAttribute("data-jdk");if(!key)return;db.ref("jobdeskStatus/"+key).set(jobdeskStatus[key]?null:true);});
+function openJdPicker(){if(!canEditJd()){showToast("Anda tidak memiliki akses edit Jobdesk","error");return;}document.getElementById("jdEditModal").classList.add("open");document.getElementById("jdAddRow").style.display="none";document.getElementById("jdEditSub").textContent="Pilih section untuk diedit";editJdTarget=null;var h='<p style="margin-bottom:14px">Pilih section yang ingin diedit jobdesk-nya:</p>';var csList=daftarStaf.filter(function(s){return s.role==="CS";});if(csList.length){h+='<div style="margin:10px 0 6px;color:var(--blue)"><i class="fas fa-headset"></i> CS (berlaku semua CS)</div><div class="kpr" data-pick="cs::__all__"><div><strong>Jobdesk CS</strong></div><span>'+jdCs.length+' tugas <i class="fas fa-chevron-right"></i></span></div>';}var kasirList=daftarStaf.filter(function(s){return s.role==="KASIR";});if(kasirList.length){h+='<div style="margin:14px 0 6px;color:var(--gold)"><i class="fas fa-cash-register"></i> Kasir (per individu)</div>';for(var i=0;i<kasirList.length;i++){var kn=kasirList[i].nama,cnt=(jdKasir[kn]||[]).length;h+='<div class="kpr" data-pick="kasir::'+kn+'"><div><strong>'+kn+'</strong></div><span>'+cnt+' tugas <i class="fas fa-chevron-right"></i></span></div>';}}document.getElementById("jdEditBody").innerHTML=h;}
+document.getElementById("jdEditBody").addEventListener("click",function(e){var pr=e.target.closest(".kpr");if(pr){var pick=pr.getAttribute("data-pick");if(pick){var parts=pick.split("::");enterEditMode(parts[0],parts[1]);}}var del=e.target.closest(".jed");if(del){var idx=parseInt(del.getAttribute("data-idx"));if(!isNaN(idx))removeJdItem(idx);}});
 function enterEditMode(type,name){editJdTarget={type:type,nama:name};var items;if(type==="kasir"){if(!jdKasir[name])jdKasir[name]=[];items=jdKasir[name];document.getElementById("jdEditSub").textContent="Jobdesk: "+name;}else{items=jdCs;document.getElementById("jdEditSub").textContent="Jobdesk CS (berlaku semua CS)";}document.getElementById("jdAddRow").style.display="flex";document.getElementById("newJdItem").value="";renderEditList(items);}
-function renderEditList(items){var el=document.getElementById("jdEditBody");if(!items||!items.length){el.innerHTML='<div class="jem"><i class="fas fa-inbox"></i>Belum ada tugas. Tambahkan di bawah.</div>';return;}var h="";for(var i=0;i<items.length;i++){h+='<div class="jei"><div class="jen">'+(i+1)+'</div><span class="jename">'+items[i]+'</span><button class="jed" data-idx="'+i+'" title="Hapus"><i class="fas fa-trash-can"></i></button></div>';}el.innerHTML=h;}
+function renderEditList(items){var el=document.getElementById("jdEditBody");if(!items||!items.length){el.innerHTML='<div style="text-align:center;padding:30px"><i class="fas fa-inbox"></i><p>Belum ada tugas. Tambahkan di bawah.</p></div>';return;}var h="";for(var i=0;i<items.length;i++){h+='<div class="jei"><div style="width:22px;height:22px;background:var(--gold-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;flex-shrink:0">'+(i+1)+'</div><span style="flex:1">'+items[i]+'</span><button class="jed" data-idx="'+i+'"><i class="fas fa-trash-can"></i></button></div>';}el.innerHTML=h;}
 function addJdItem(){var input=document.getElementById("newJdItem"),val=input.value.trim().toUpperCase();if(!val){showToast("Masukkan nama tugas","error");return;}if(!editJdTarget)return;var arr=getTargetArr();for(var i=0;i<arr.length;i++){if(arr[i]===val){showToast("Tugas sudah ada","error");return;}}arr.push(val);saveJdToFirebase();renderEditList(arr);input.value="";showToast('"'+val+'" ditambahkan',"success");}
 function removeJdItem(idx){if(!editJdTarget)return;var arr=getTargetArr(),removed=arr.splice(idx,1)[0];saveJdToFirebase();cleanupOrphanStatus();renderEditList(arr);showToast('"'+removed+'" dihapus',"info");}
 function getTargetArr(){if(!editJdTarget)return[];if(editJdTarget.type==="kasir"){if(!jdKasir[editJdTarget.nama])jdKasir[editJdTarget.nama]=[];return jdKasir[editJdTarget.nama];}return jdCs;}
-function saveJdToFirebase(){db.ref("jdKasir").set(jdKasirToObj());db.ref("jdCs").set(arrToObj(jdCs));}
-function cleanupOrphanStatus(){var valid={};for(var n in jdKasir){var it=jdKasir[n]||[];for(var i=0;i<it.length;i++)valid[jdKey(n,it[i],i)]=true;}for(var ci=0;ci<daftarStaf.length;ci++){if(daftarStaf[ci].role!=="KASIR"){for(var j=0;j<jdCs.length;j++)valid[jdKey(daftarStaf[ci].nama,jdCs[j],j)]=true;}}var rm={};for(var k in jobdeskStatus){if(!valid[k])rm[k]=null;}if(Object.keys(rm).length>0)db.ref("jobdeskStatus/"+today()).update(rm);}
+function saveJdToFirebase(){var obj={};for(var n in jdKasir)obj[n]=arrToObj(jdKasir[n]);db.ref("jdKasir").set(obj);db.ref("jdCs").set(arrToObj(jdCs));}
+function cleanupOrphanStatus(){var valid={};for(var n in jdKasir){var it=jdKasir[n]||[];for(var i=0;i<it.length;i++)valid[jdKey(n,it[i],i)]=true;}for(var ci=0;ci<daftarStaf.length;ci++){if(daftarStaf[ci].role!=="KASIR"){for(var j=0;j<jdCs.length;j++)valid[jdKey(daftarStaf[ci].nama,jdCs[j],j)]=true;}}var rm={};for(var k in jobdeskStatus){if(!valid[k])rm[k]=null;}if(Object.keys(rm).length>0)db.ref("jobdeskStatus").update(rm);}
 function closeJdEdit(){document.getElementById("jdEditModal").classList.remove("open");editJdTarget=null;if(currentView==="jobdesk")renderJobdesk();}
-document.getElementById("newJdItem").addEventListener("keydown",function(e){if(e.key==="Enter")addJdItem();});
 
-/* ===== SHIFT ===== */
-function renderShift(){var editable=canEditShift();document.getElementById("shiftLock").style.display=editable?"none":"flex";var kasirList=[],csList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}var totalAssigned=0;for(var n in shiftData){if(shiftData[n])totalAssigned++;}var html="";html+=buildShiftSection("KASIR",kasirList,editable);html+=buildShiftSection("CS",csList,editable);html+=buildShiftSection("KKS",kksList,editable);document.getElementById("shiftCenter").innerHTML=html;document.getElementById("shiftStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalAssigned+'</span><span class="sl">Ditugaskan</span></div><div class="stat-pill"><span class="sv gold">'+daftarStaf.length+'</span><span class="sl">Total</span></div>';}
-function buildShiftDisplay(val){if(!val)return'<div class="shift-display sd-empty"><i class="fas fa-clock" style="opacity:.4"></i> Belum diatur</div>';var preset=findPreset(val);if(preset)return'<div class="shift-display"><div class="sd-icon '+preset.cls+'"><i class="fas '+preset.icon+'"></i></div><div class="sd-info"><div class="sd-label">'+preset.label+'</div><div class="sd-time">'+preset.time+'</div></div></div>';return'<div class="shift-display"><div class="sd-icon sd-libur"><i class="fas fa-clock"></i></div><div class="sd-info"><div class="sd-label" style="color:var(--text-muted)">Custom</div><div class="sd-time">'+val+'</div></div></div>';}
-function buildShiftSection(roleLabel,list,editable){if(!list.length)return"";var h='<div class="section-block"><div class="section-head"><div class="gi '+giClass(roleLabel)+'"><i class="fas fa-'+(roleLabel==="KASIR"?"cash-register":roleLabel==="CS"?"headset":"user-gear")+'"></i></div><span class="gn">'+roleLabel+'</span><span class="gr '+grClass(roleLabel)+'">'+roleLabel+'</span></div><div class="card-grid">';for(var i=0;i<list.length;i++){var n=list[i],shift=shiftData[n]||"",isEditing=(editingShiftNama===n),safeN=n.replace(/'/g,"\\'"),safeId=n.replace(/\s/g,"_");h+='<div class="shift-card"><div class="sc-top"><div class="av '+avClass(roleLabel)+'">'+getInitials(n)+'</div><div class="cinfo"><div class="cname">'+n+'</div><div class="cmeta"><span class="mr '+mrClass(roleLabel)+'">'+roleLabel+'</span></div></div></div>';if(isEditing&&editable){h+='<div class="sc-edit"><select id="shiftSel_'+safeId+'" onchange="onShiftPresetChange(this,\''+safeN+'\')"><option value="">-- Pilih Shift --</option>';for(var p=0;p<SHIFT_PRESET.length;p++){var matched=shift&&findPreset(shift)===SHIFT_PRESET[p];h+='<option value="'+SHIFT_PRESET[p].label+'"'+(matched?" selected":"")+'>'+SHIFT_PRESET[p].label+' ('+SHIFT_PRESET[p].time+')</option>';}var isCustom=shift&&!findPreset(shift);h+='<option value="__custom"'+(isCustom?" selected":"")+'>Custom...</option></select>';h+='<input type="text" id="shiftInput_'+safeId+'" placeholder="Ketik manual..." value="'+(isCustom?shift:"")+'">';h+='<button class="btn btn-gold btn-sm" onclick="saveShift(\''+safeN+'\')"><i class="fas fa-check"></i></button>';h+='<button class="btn bcm btn-sm" onclick="cancelShiftEdit()"><i class="fas fa-xmark"></i></button></div>';}else{h+=buildShiftDisplay(shift);if(editable)h+='<div style="margin-top:10px"><button class="btn btn-sm btn-gold" style="width:100%" onclick="startShiftEdit(\''+safeN+'\')"><i class="fas fa-pen"></i> Atur Shift</button></div>';}h+='</div>';}h+='</div></div>';return h;}
+/* SHIFT */
+function renderShift(){var editable=canEditShift();document.getElementById("shiftLock").style.display=editable?"none":"flex";var kasirList=[],csList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}var totalAssigned=0;for(var n in shiftData){if(shiftData[n])totalAssigned++;}var html="";html+=buildShiftSection("KASIR",kasirList,editable);html+=buildShiftSection("CS",csList,editable);html+=buildShiftSection("KKS",kksList,editable);document.getElementById("shiftCenter").innerHTML=html||'<div class="empty-state"><i class="fas fa-clock"></i><p>Belum ada data shift</p></div>';document.getElementById("shiftStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalAssigned+'</span><span class="sl">Ditugaskan</span></div><div class="stat-pill"><span class="sv gold">'+daftarStaf.length+'</span><span class="sl">Total</span></div>';}
+function buildShiftDisplay(val){if(!val)return'<div class="shift-display"><div class="sd-icon sd-libur"><i class="fas fa-clock"></i></div><div><div class="sd-label" style="color:var(--text-muted)">Belum diatur</div></div></div>';var preset=findPreset(val);if(preset)return'<div class="shift-display"><div class="sd-icon '+preset.cls+'"><i class="fas '+preset.icon+'"></i></div><div><div class="sd-label">'+preset.label+'</div><div class="sd-time">'+preset.time+'</div></div></div>';return'<div class="shift-display"><div class="sd-icon sd-libur"><i class="fas fa-clock"></i></div><div><div class="sd-label">Custom</div><div class="sd-time">'+val+'</div></div></div>';}
+function buildShiftSection(roleLabel,list,editable){if(!list.length)return"";var h='<div><h3 style="margin:16px 0 12px;color:'+(roleLabel==="KASIR"?"var(--gold)":roleLabel==="CS"?"var(--blue)":"var(--teal)")+'"><i class="fas fa-'+(roleLabel==="KASIR"?"cash-register":roleLabel==="CS"?"headset":"user-gear")+'"></i> '+roleLabel+'</h3><div class="card-grid">';for(var i=0;i<list.length;i++){var n=list[i],shift=shiftData[n]||"",isEditing=(editingShiftNama===n),safeN=n.replace(/'/g,"\\'"),safeId=n.replace(/\s/g,"_");h+='<div class="shift-card"><div><strong>'+n+'</strong><span style="font-size:11px;color:var(--text-muted);margin-left:8px">'+roleLabel+'</span></div>';if(isEditing&&editable){h+='<div style="margin-top:10px"><select id="shiftSel_'+safeId+'" onchange="onShiftPresetChange(this,\''+safeN+'\')" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><option value="">-- Pilih Shift --</option>';for(var p=0;p<SHIFT_PRESET.length;p++){var matched=shift&&findPreset(shift)===SHIFT_PRESET[p];h+='<option value="'+SHIFT_PRESET[p].label+'"'+(matched?" selected":"")+'>'+SHIFT_PRESET[p].label+' ('+SHIFT_PRESET[p].time+')</option>';}var isCustom=shift&&!findPreset(shift);h+='<option value="__custom"'+(isCustom?" selected":"")+'>Custom...</option></select>';h+='<input type="text" id="shiftInput_'+safeId+'" placeholder="Ketik manual..." value="'+(isCustom?shift:"")+'" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px">';h+='<div style="display:flex;gap:8px"><button class="btn btn-gold btn-sm" onclick="saveShift(\''+safeN+'\')">Simpan</button><button class="btn btn-outline btn-sm" onclick="cancelShiftEdit()">Batal</button></div></div>';}else{h+=buildShiftDisplay(shift);if(editable)h+='<button class="btn btn-sm btn-gold" style="margin-top:10px;width:100%" onclick="startShiftEdit(\''+safeN+'\')">Atur Shift</button>';}h+='</div>';}h+='</div></div>';return h;}
 function startShiftEdit(nama){editingShiftNama=nama;renderShift();}
 function cancelShiftEdit(){editingShiftNama=null;renderShift();}
 function onShiftPresetChange(sel,nama){var val=sel.value,inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_"));if(val==="__custom"){inp.value="";inp.focus();}else if(val){inp.value=val;}else{inp.value="";}}
-function saveShift(nama){var inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_")),val=inp.value.trim();if(!val){showToast("Pilih atau ketik shift terlebih dahulu","error");return;}db.ref("shifts/"+today()+"/"+nama).set(val);editingShiftNama=null;showToast("Shift "+nama+" diperbarui","success");}
+function saveShift(nama){var inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_"));if(!inp){showToast("Error","error");return;}var val=inp.value.trim();if(!val){showToast("Pilih atau ketik shift","error");return;}db.ref("shifts/"+nama).set(val);editingShiftNama=null;showToast("Shift "+nama+" diperbarui","success");}
 
-/* ===== PROFIL ===== */
-function renderProfil(){if(!currentUser)return;var nama=currentUser,role=getRole(nama),gmail=getGmail(nama),cnt=hitungHarian[nama]||0;var myShift=shiftData[nama]||"",shiftDisplay=myShift,preset=findPreset(myShift);if(preset)shiftDisplay=preset.label+" \u2014 "+preset.time;else if(myShift)shiftDisplay=myShift;else shiftDisplay="Belum diatur";var isOnIzin=!!izinAktif[nama];var maxR=getMaxIzin(role),curR=countIzinByRole(role);var avBg=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";var h='<div class="profile-card"><div class="profile-avatar" style="background:'+avBg+'">'+getInitials(nama)+'</div><div class="profile-name">'+nama+'</div><div class="profile-role"><span class="role-tag '+(role||"").toLowerCase()+'" style="font-size:11px;padding:3px 12px">'+(role||"-")+'</span>';if(nama===ADMIN_USER)h+=' <span class="sc-admin-badge" style="font-size:10px;padding:3px 10px">ADMIN</span>';h+='</div><div class="profile-info"><div class="pi-box"><div class="pi-val gold" style="font-size:12px;word-break:break-all">'+gmail+'</div><div class="pi-lbl"><i class="fas fa-envelope" style="margin-right:4px"></i>Gmail</div></div><div class="pi-box"><div class="pi-val blue" style="font-size:13px">'+shiftDisplay+'</div><div class="pi-lbl"><i class="fas fa-clock" style="margin-right:4px"></i>Shift Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(cnt>0?"gold":"green")+'">'+cnt+' / '+MAX_PER_HARI+'</div><div class="pi-lbl"><i class="fas fa-right-from-bracket" style="margin-right:4px"></i>Izin Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(isOnIzin?"gold":"green")+'">'+(isOnIzin?"Sedang Izin":"Di Pos")+'</div><div class="pi-lbl"><i class="fas fa-circle" style="margin-right:4px"></i>Status</div></div></div>';h+='<div style="padding:10px 14px;border-radius:10px;background:var(--card-light);border:1px solid var(--border);margin-bottom:20px;text-align:center"><span style="font-size:11px;color:var(--text-muted)">Batas izin '+role+' saat ini: </span><span style="font-size:14px;font-weight:700;color:var(--gold)">'+curR+' / '+maxR+' orang</span></div>';h+='<div class="profile-section"><div class="ps-title"><i class="fas fa-key"></i> Ganti Password</div><div class="pw-fields"><input type="password" id="pwOld" placeholder="Password lama"><input type="password" id="pwNew" placeholder="Password baru"><input type="password" id="pwConfirm" placeholder="Konfirmasi password baru"></div><div class="pw-msg" id="pwMsg"></div><button class="btn btn-full btn-gold btn-sm" onclick="changePassword()" style="margin-top:8px"><i class="fas fa-key"></i> Ganti Password</button></div></div>';document.getElementById("profileWrap").innerHTML=h;}
-function changePassword(){var old=document.getElementById("pwOld").value,nw=document.getElementById("pwNew").value,conf=document.getElementById("pwConfirm").value,msg=document.getElementById("pwMsg");if(!old||!nw||!conf){msg.className="pw-msg err";msg.textContent="Semua field harus diisi";return;}if(old!==getPass(currentUser)){msg.className="pw-msg err";msg.textContent="Password lama salah";return;}if(nw!==conf){msg.className="pw-msg err";msg.textContent="Konfirmasi tidak cocok";return;}if(nw===old){msg.className="pw-msg err";msg.textContent="Password baru harus berbeda";return;}db.ref("staf/"+currentUser+"/password").set(nw);msg.className="pw-msg ok";msg.textContent="Password berhasil diubah";document.getElementById("pwOld").value="";document.getElementById("pwNew").value="";document.getElementById("pwConfirm").value="";showToast("Password berhasil diubah","success");}
-
-/* ===== ADMIN: MAX IZIN ===== */
-function renderMaxIzin(){
-  var roles=["CS","KASIR","KKS"],h="";
-  for(var i=0;i<roles.length;i++){
-    var role=roles[i],val=settings.maxIzinPerRole?settings.maxIzinPerRole[role]:1;
-    var labelCls=role==="CS"?"ti-cs":role==="KASIR"?"ti-kasir":"ti-kks";
-    h+='<div class="max-izin-row"><div class="mir-label"><i class="fas fa-right-from-bracket"></i> Maks Izin</div><div class="max-izin-group"><div class="max-izin-item"><span class="mi-label '+labelCls+'">'+role+'</span><div class="num-stepper"><button class="ns-minus" data-ns-role="'+role+'">\u2212</button><div class="num-val" id="nsVal_'+role+'">'+val+'</div><button class="ns-plus" data-ns-role="'+role+'">+</button></div></div></div></div>';
+/* ===== STAF DIRECTORY - TABEL ===== */
+function renderStaf(){
+  var csList=[],kasirList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i]);else if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i]);else kksList.push(daftarStaf[i]);}
+  var izinCount=Object.keys(izinAktif).length;
+  document.getElementById("stafHeaderActions").innerHTML='<div class="stat-pill"><span class="sv green">'+daftarStaf.length+'</span><span class="sl">Total</span></div><div class="stat-pill"><span class="sv gold">'+izinCount+'</span><span class="sl">Izin Aktif</span></div>';
+  
+  // Stat Cards
+  var h='<div class="staf-stats-row">';
+  h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--gold),var(--orange))"><i class="fas fa-users"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--gold)">'+daftarStaf.length+'</div><div class="ssc-lbl">Total Staf</div></div></div>';
+  h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--blue),#2563eb)"><i class="fas fa-headset"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--blue)">'+csList.length+'</div><div class="ssc-lbl">CS</div></div></div>';
+  h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--gold),var(--orange))"><i class="fas fa-cash-register"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--gold)">'+kasirList.length+'</div><div class="ssc-lbl">KASIR</div></div></div>';
+  h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--teal),#16a085)"><i class="fas fa-user-gear"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--teal)">'+kksList.length+'</div><div class="ssc-lbl">KKS</div></div></div>';
+  h+='</div>';
+  
+  // Tabel Staf
+  h+='<div class="staf-table-container"><table class="staf-table"><thead><tr><th>NAMA STAF</th><th>JABATAN</th><th>STATUS</th><th>EMAIL</th></tr></thead><tbody>';
+  var allStaf = [...csList, ...kasirList, ...kksList];
+  for(var i=0;i<allStaf.length;i++){
+    var s=allStaf[i];
+    var photo=getPhotoURL(s.nama);
+    var isOnIzin=!!izinAktif[s.nama];
+    var avatarClass=s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks";
+    var avatarHtml=photo?'<div class="staf-avatar-sm '+avatarClass+'" style="background-image:url('+photo+');background-size:cover;background-position:center"><img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px" alt=""></div>':'<div class="staf-avatar-sm '+avatarClass+'">'+getInitials(s.nama)+'</div>';
+    var statusClass=isOnIzin?"izin":"online";
+    var statusText=isOnIzin?"Sedang Izin":"Di Hokben";
+    var durasi="";
+    if(isOnIzin && izinAktif[s.nama]){
+      durasi = " ("+formatDuration(Date.now()-izinAktif[s.nama].mulai)+")";
+    }
+    var gmail=s.gmail && s.gmail!=="-" ? s.gmail : "-";
+    h+='<tr><td><div class="staf-name-cell">'+avatarHtml+'<span class="staf-name-text">'+s.nama+'</span>'+(s.nama===ADMIN_USER?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px">ADMIN</span>':'')+'</div></td>';
+    h+='<td><span class="role-tag '+(s.role||"").toLowerCase()+'">'+(s.role||"-")+'</span></td>';
+    h+='<td><div class="status-badge-staf '+statusClass+'"><div class="status-dot-sm"></div>'+statusText+durasi+'</div></td>';
+    h+='<td><div class="staf-gmail"><i class="fas fa-envelope"></i> '+gmail+'</div></td></tr>';
   }
-  document.getElementById("adminMaxIzin").innerHTML=h;
+  h+='</tbody></table></div>';
+  document.getElementById("stafContent").innerHTML=h;
 }
-document.getElementById("adminMaxIzin").addEventListener("click",function(e){
-  var btn=e.target.closest("[data-ns-role]");if(!btn)return;
-  var role=btn.getAttribute("data-ns-role"),isMinus=btn.classList.contains("ns-minus");
-  var cur=settings.maxIzinPerRole?settings.maxIzinPerRole[role]:1;
-  var nv=isMinus?Math.max(0,cur-1):Math.min(10,cur+1);
-  db.ref("settings/maxIzinPerRole/"+role).set(nv);
-});
 
-/* ===== ADMIN: PERATURAN ===== */
-function renderPeraturan(){var roles=["CS","KASIR","KKS"],keys=["editJobdesk","editShift","viewIzinLog"],h="";for(var k=0;k<keys.length;k++){var key=keys[k];h+='<div class="toggle-row"><div class="tr-label"><i class="fas '+settingIcon(key)+'"></i> '+settingLabel(key)+'</div><div class="toggle-group">';for(var r=0;r<roles.length;r++){var role=roles[r],checked=settings[key]&&settings[key][role]?true:false,labelCls=role==="CS"?"ti-cs":role==="KASIR"?"ti-kasir":"ti-kks";h+='<div class="toggle-item"><span class="ti-label '+labelCls+'">'+role+'</span><label class="toggle-switch"><input type="checkbox" data-setting="'+key+'" data-role="'+role+'"'+(checked?" checked":"")+'><span class="toggle-slider"></span></label></div>';}h+='</div></div>';}document.getElementById("adminPeraturan").innerHTML=h;}
-document.getElementById("adminPeraturan").addEventListener("change",function(e){var input=e.target;if(!input.dataset.setting||!input.dataset.role)return;var setting=input.dataset.setting,role=input.dataset.role,val=input.checked;db.ref("settings/"+setting+"/"+role).set(val);settings[setting][role]=val;showToast("Akses "+role+" untuk "+settingLabel(setting)+" "+(val?"diaktifkan":"dinonaktifkan"),"info");if(currentView==="izin")updateIzinPanelVisibility();if(currentView==="jobdesk")renderJobdesk();if(currentView==="shift")renderShift();});
+/* FOTO */
+function openPhotoUpload(){document.getElementById("photoModal").classList.add("open");var preview=document.getElementById("photoPreview");var currentPhoto=getPhotoURL(currentUser);if(currentPhoto){preview.innerHTML='<img src="'+currentPhoto+'" style="width:100%;height:100%;object-fit:cover">';}else{var role=getRole(currentUser);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";preview.style.background=bgColor;preview.innerHTML='<i class="fas fa-user" style="font-size:60px;color:#fff"></i>';}}
+function closePhotoModal(){document.getElementById("photoModal").classList.remove("open");document.getElementById("photoInput").value="";}
+function uploadPhoto(){var file=document.getElementById("photoInput").files[0];if(!file){showToast("Pilih file","error");return;}if(!file.type.match('image.*')){showToast("Hanya file gambar","error");return;}if(file.size>2*1024*1024){showToast("Max 2MB","error");return;}showToast("Mengupload foto...","info");storage.ref('profile_photos/'+currentUser+'_'+Date.now()+'.jpg').put(file).then(function(s){return s.ref.getDownloadURL();}).then(function(url){return db.ref("staf/"+currentUser+"/photoURL").set(url);}).then(function(){showToast("Foto profil berhasil diupload!","success");closePhotoModal();renderProfil();if(currentView==="staf")renderStaf();}).catch(function(err){showToast("Gagal: "+err.message,"error");});}
 
-/* ===== ADMIN: RIWAYAT ===== */
-function renderAdminLog(){var el=document.getElementById("adminLogList"),sorted=logIzin.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});if(!sorted.length){el.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>Belum ada riwayat izin hari ini</p></div>';return;}var h="",now=Date.now();for(var j=0;j<sorted.length;j++){var l=sorted[j],isOngoing=!l.selesai,t=l.selesai?l.selesai:now,ld=(t-l.mulai)/60000,m=Math.floor(ld),s=Math.floor((ld*60)%60),w1=new Date(l.mulai).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),w2=l.selesai?new Date(l.selesai).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):"...",lo=ld>ALERT_MENIT,lc=lo?"log-lewat":"log-aman",lb=lo?"LEWAT BATAS":"AMAN";h+='<div class="log-item '+lc+'"><div class="li-name">'+l.nama;if(isOngoing)h+=' <span style="font-size:9px;padding:1px 6px;border-radius:4px;background:var(--gold-dim);color:var(--gold);font-weight:700;margin-left:4px">AKTIF</span>';h+='</div><div class="li-detail">'+w1+' \u2014 '+w2+' \u00B7 '+String(m).padStart(2,"0")+':'+String(s).padStart(2,"0")+' \u00B7 '+(l.jabatan||"")+'</div><div class="li-badge">'+lb+'</div></div>';}el.innerHTML=h;}
+/* PROFIL */
+function renderProfil(){
+  if(!currentUser)return;var nama=currentUser,role=getRole(nama),gmail=getGmail(nama),cnt=hitungHarian[nama]||0;
+  var myShift=shiftData[nama]||"",shiftDisplay=myShift,preset=findPreset(myShift);if(preset)shiftDisplay=preset.label+" - "+preset.time;else if(myShift)shiftDisplay=myShift;else shiftDisplay="Belum diatur";
+  var isOnIzin=!!izinAktif[nama];var maxDay=getMaxPerDay(role),maxConc=getMaxConcurrent(role),curConc=countIzinByRole(role);
+  var photoURL=getPhotoURL(nama);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";
+  var avatarHtml=photoURL?'<img src="'+photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:60px">':'<i class="fas fa-user" style="font-size:48px;color:#fff"></i>';
+  var h='<div class="profile-card"><div class="profile-avatar-container" onclick="openPhotoUpload()"><div class="profile-avatar" style="background:'+bgColor+'">'+avatarHtml+'</div><div class="avatar-overlay"><i class="fas fa-camera"></i></div></div><div class="profile-name">'+nama+'</div><div class="profile-role"><span class="role-tag '+(role||"").toLowerCase()+'">'+(role||"-")+'</span>'+(nama===ADMIN_USER?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px">ADMIN</span>':'')+'</div><div class="profile-info"><div class="pi-box"><div class="pi-val gold">'+gmail+'</div><div class="pi-lbl">Gmail</div></div><div class="pi-box"><div class="pi-val blue">'+shiftDisplay+'</div><div class="pi-lbl">Shift</div></div><div class="pi-box"><div class="pi-val '+(cnt>0?"gold":"green")+'">'+cnt+' / '+maxDay+'</div><div class="pi-lbl">Izin Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(isOnIzin?"gold":"green")+'">'+(isOnIzin?"Sedang Izin":"Di Hokben")+'</div><div class="pi-lbl">Status</div></div></div><div style="padding:12px 16px;background:rgba(0,0,0,0.02);border-radius:12px;margin-bottom:24px;text-align:center"><span style="font-size:12px;color:var(--text-muted)">Batas izin bersamaan '+role+': </span><span style="font-size:16px;font-weight:700;color:var(--gold)">'+curConc+' / '+maxConc+' orang</span></div><div class="profile-section"><div class="ps-title"><i class="fas fa-key"></i> Ganti Password</div><div class="pw-fields"><input type="password" id="pwOld" placeholder="Password lama"><input type="password" id="pwNew" placeholder="Password baru"><input type="password" id="pwConfirm" placeholder="Konfirmasi password baru"></div><div class="pw-msg" id="pwMsg"></div><button class="btn btn-full btn-gold btn-sm" onclick="changePassword()" style="margin-top:8px"><i class="fas fa-key"></i> Ganti Password</button></div></div>';
+  document.getElementById("profileWrap").innerHTML=h;
+}
+function changePassword(){var old=document.getElementById("pwOld").value,nw=document.getElementById("pwNew").value,conf=document.getElementById("pwConfirm").value,msg=document.getElementById("pwMsg");if(!old||!nw||!conf){msg.textContent="Semua field harus diisi";msg.style.color="var(--red)";return;}if(old!==getPass(currentUser)){msg.textContent="Password lama salah";msg.style.color="var(--red)";return;}if(nw!==conf){msg.textContent="Konfirmasi tidak cocok";msg.style.color="var(--red)";return;}if(nw===old){msg.textContent="Password baru harus berbeda";msg.style.color="var(--red)";return;}db.ref("staf/"+currentUser+"/password").set(nw);msg.textContent="Password berhasil diubah";msg.style.color="var(--green)";document.getElementById("pwOld").value="";document.getElementById("pwNew").value="";document.getElementById("pwConfirm").value="";showToast("Password berhasil diubah","success");}
 
-/* ===== ADMIN PANEL ===== */
-function openAdmin(){if(currentUser!==ADMIN_USER)return;renderAdminStats();renderStaffList();renderMaxIzin();renderPeraturan();renderAdminLog();document.getElementById("adminModal").classList.add("open");}
-function closeAdmin(){document.getElementById("adminModal").classList.remove("open");}
-function renderAdminStats(){var csC=0,kasirC=0,kksC=0,hasG=0;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csC++;else if(daftarStaf[i].role==="KASIR")kasirC++;else kksC++;if(daftarStaf[i].gmail&&daftarStaf[i].gmail!=="-")hasG++;}document.getElementById("adminStats").innerHTML='<div class="admin-stat-box"><div class="asv gd">'+daftarStaf.length+'</div><div class="asl">Total</div></div><div class="admin-stat-box"><div class="asv bl">'+csC+'</div><div class="asl">CS</div></div><div class="admin-stat-box"><div class="asv gd">'+kasirC+'</div><div class="asl">KASIR</div></div><div class="admin-stat-box"><div class="asv tl">'+kksC+'</div><div class="asl">KKS</div></div><div class="admin-stat-box"><div class="asv gd">'+hasG+'</div><div class="asl">Gmail</div></div>';}
-function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=s.nama===ADMIN_USER;h+='<div class="staff-card'+(prot?' prot':'')+'"><div class="sc-av '+scAvClass(s.role)+'">'+getInitials(s.nama)+'</div><div class="sc-info"><div class="sc-name">'+s.nama;if(prot)h+=' <span class="sc-admin-badge">ADMIN</span>';h+='</div><div class="sc-row2"><span class="sc-role '+srClass(s.role)+'">'+s.role+'</span><span class="sc-gmail"><i class="fas fa-envelope"></i> '+(s.gmail||"-")+'</span></div></div><div class="sc-actions">';if(!prot)h+='<button class="bdr" data-reset-pw="'+s.nama+'" title="Reset Password"><i class="fas fa-key"></i></button><button class="bdl" data-del-staf="'+s.nama+'" title="Hapus"><i class="fas fa-trash-can"></i></button>';h+='</div></div>';}el.innerHTML=h;}
-document.getElementById("staffList").addEventListener("click",function(e){var btnDel=e.target.closest("[data-del-staf]");if(btnDel){var n=btnDel.getAttribute("data-del-staf");if(n)removeStaff(n);return;}var btnPw=e.target.closest("[data-reset-pw]");if(btnPw){var n2=btnPw.getAttribute("data-reset-pw");if(n2)resetStaffPw(n2);return;}});
-document.getElementById("newStaffName").addEventListener("keydown",function(e){if(e.key==="Enter")addStaff();});
-document.getElementById("newStaffGmail").addEventListener("keydown",function(e){if(e.key==="Enter")addStaff();});
-function addStaff(){var nI=document.getElementById("newStaffName"),gI=document.getElementById("newStaffGmail"),rS=document.getElementById("newStaffRole"),nama=nI.value.trim().toUpperCase(),gmail=gI.value.trim().toLowerCase();if(!nama){showToast("Masukkan nama staf","error");return;}if(nama.length<2){showToast("Nama terlalu pendek","error");return;}if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===nama){showToast("Nama sudah ada","error");return;}}db.ref("staf/"+nama).set({nama:nama,role:rS.value,gmail:gmail,password:DEFAULT_PASS});nI.value="";gI.value="";showToast('"'+nama+'" ('+rS.value+') ditambahkan \u2014 Password: '+DEFAULT_PASS,"success");}
-function removeStaff(nama){if(nama===ADMIN_USER)return;if(izinAktif[nama]){showToast("Staf sedang izin","error");return;}var u={};u["staf/"+nama]=null;u["jdKasir/"+nama]=null;db.ref().update(u);showToast('"'+nama+'" dihapus',"info");}
+/* ADMIN */
+function renderMaxIzin(){var roles=["CS","KASIR","KKS"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxPerDay(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="day">-</button><span class="stepper-value" id="maxDay_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="day">+</button></div></div>';}document.getElementById("adminMaxIzin").innerHTML=h;}
+function renderMaxConcurrent(){var roles=["CS","KASIR","KKS"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxConcurrent(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="conc">-</button><span class="stepper-value" id="maxConc_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="conc">+</button></div></div>';}document.getElementById("adminMaxConcurrent").innerHTML=h;}
+function renderPeraturan(){var roles=["CS","KASIR","KKS"],keys=["editJobdesk","editShift","viewIzinLog"],h="";for(var k=0;k<keys.length;k++){var key=keys[k];var label=key==="editJobdesk"?"Edit Jobdesk":key==="editShift"?"Edit Shift":"Lihat Riwayat Izin";h+='<div style="margin-bottom:16px"><div style="font-weight:600;margin-bottom:8px">'+label+'</div><div class="toggle-group">';for(var r=0;r<roles.length;r++){var role=roles[r],checked=(settings[key]&&settings[key][role])?true:false;h+='<div class="toggle-item"><label>'+role+'</label><div class="toggle-switch '+(checked?'active':'')+'" data-setting="'+key+'" data-role="'+role+'"></div></div>';}h+='</div></div>';}document.getElementById("adminPeraturan").innerHTML=h;}
+document.getElementById("adminPeraturan").addEventListener("click",function(e){var toggle=e.target.closest(".toggle-switch");if(!toggle)return;var setting=toggle.getAttribute("data-setting");var role=toggle.getAttribute("data-role");var newVal=!toggle.classList.contains("active");if(!settings[setting])settings[setting]={};settings[setting][role]=newVal;db.ref("settings/"+setting+"/"+role).set(newVal);if(newVal)toggle.classList.add("active");else toggle.classList.remove("active");showToast("Akses "+role+" untuk "+setting+" "+(newVal?"diaktifkan":"dinonaktifkan"),"info");});
+function loadAdminLogByDate(){var dateInput=document.getElementById("adminLogDate").value;if(!dateInput){showToast("Pilih tanggal","error");return;}currentAdminLogDate=dateInput;var d=new Date(dateInput+"T12:00:00");var dateStr=d.toDateString();db.ref("logIzin/"+dateStr).once("value",function(snap){var r=snap.val();renderAdminLogList(r?Object.values(r):[],dateInput);});}
+function resetAdminLogDate(){document.getElementById("adminLogDate").value=todayYMD();loadAdminLogByDate();}
+function renderAdminLogList(logs,dateLabel){var el=document.getElementById("adminLogList"),sorted=logs.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});if(!sorted.length){el.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>Tidak ada riwayat untuk tanggal '+dateLabel+'</p></div>';return;}var h="",now=Date.now();for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:now;var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var lewat=(endTime-l.mulai)>ALERT_MENIT*60000;h+='<div class="log-item-admin '+(lewat?'overdue':'')+'"><div class="log-name">'+l.nama+(l.selesai===null&&dateLabel===todayYMD()?' <span style="font-size:10px;color:var(--gold)">(AKTIF)</span>':'')+'</div><div class="log-detail">'+durasiStr+' \u2022 '+w1+' \u2014 '+w2+' \u2022 '+(l.jabatan||"")+'</div><div class="log-badge '+(lewat?'lewat':'aman')+'">'+(lewat?'LEWAT BATAS':'AMAN')+'</div></div>';}el.innerHTML=h;}
+function renderAdminStats(){var csC=0,kasirC=0,kksC=0,izinActive=Object.keys(izinAktif).length;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csC++;else if(daftarStaf[i].role==="KASIR")kasirC++;else kksC++;}document.getElementById("adminStats").innerHTML='<div class="stat-card"><div class="stat-value">'+daftarStaf.length+'</div><div class="stat-label">Total Staf</div></div><div class="stat-card"><div class="stat-value" style="color:var(--blue)">'+csC+'</div><div class="stat-label">CS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--gold)">'+kasirC+'</div><div class="stat-label">KASIR</div></div><div class="stat-card"><div class="stat-value" style="color:var(--teal)">'+kksC+'</div><div class="stat-label">KKS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--red)">'+izinActive+'</div><div class="stat-label">Izin Aktif</div></div>';}
+function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=s.nama===ADMIN_USER;var photo=getPhotoURL(s.nama);var avatarInner=photo?'<img src="'+photo+'" alt="">':getInitials(s.nama);h+='<div class="staff-item"><div class="staff-info"><div class="staff-avatar '+(s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks")+'">'+avatarInner+'</div><div class="staff-details"><div class="staff-name">'+s.nama+(prot?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px;margin-left:6px">ADMIN</span>':'')+'</div><div class="staff-role">'+s.role+' \u2022 '+(s.gmail||"-")+'</div></div></div><div class="staff-actions">';if(!prot){h+='<button class="btn-edit" data-edit="'+s.nama+'" title="Edit"><i class="fas fa-edit"></i></button>';h+='<button class="btn-reset" data-reset="'+s.nama+'" title="Reset PW"><i class="fas fa-key"></i></button>';h+='<button class="btn-delete" data-delete="'+s.nama+'" title="Hapus"><i class="fas fa-trash"></i></button>';}h+='</div></div>';}el.innerHTML=h;}
+document.getElementById("staffList").addEventListener("click",function(e){var btnDel=e.target.closest("[data-delete]");if(btnDel){var n=btnDel.getAttribute("data-delete");if(n&&confirm("Hapus staf "+n+"?"))removeStaff(n);return;}var btnPw=e.target.closest("[data-reset]");if(btnPw){var n2=btnPw.getAttribute("data-reset");if(n2&&confirm("Reset password "+n2+" menjadi "+DEFAULT_PASS+"?"))resetStaffPw(n2);return;}var btnEdit=e.target.closest("[data-edit]");if(btnEdit){var n3=btnEdit.getAttribute("data-edit");if(n3)openEditStaff(n3);return;}});
+function openEditStaff(nama){if(nama===ADMIN_USER)return;document.getElementById("editStaffNameDisplay").textContent="Edit Staf: "+nama;document.getElementById("editStaffGmail").value=getGmail(nama);document.getElementById("editStaffPass").value="";document.getElementById("editStaffModal").classList.add("open");window._editStaffTarget=nama;}
+function saveEditStaff(){var nama=window._editStaffTarget;if(!nama)return;var gmail=document.getElementById("editStaffGmail").value.trim().toLowerCase();var newPass=document.getElementById("editStaffPass").value.trim();if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";var updates={};updates["staf/"+nama+"/gmail"]=gmail;if(newPass)updates["staf/"+nama+"/password"]=newPass;db.ref().update(updates);showToast("Data staf "+nama+" diperbarui","success");closeEditStaff();}
+function closeEditStaff(){document.getElementById("editStaffModal").classList.remove("open");window._editStaffTarget=null;}
+function addStaff(){var nI=document.getElementById("newStaffName"),gI=document.getElementById("newStaffGmail"),rS=document.getElementById("newStaffRole"),nama=nI.value.trim().toUpperCase(),gmail=gI.value.trim().toLowerCase();if(!nama){showToast("Masukkan nama staf","error");return;}if(nama.length<2){showToast("Nama terlalu pendek","error");return;}if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===nama){showToast("Nama sudah ada","error");return;}}db.ref("staf/"+nama).set({nama:nama,role:rS.value,gmail:gmail,password:DEFAULT_PASS,photoURL:null});nI.value="";gI.value="";showToast('"'+nama+'" ('+rS.value+') ditambahkan - Password: '+DEFAULT_PASS,"success");}
+function removeStaff(nama){if(nama===ADMIN_USER)return;if(izinAktif[nama]){showToast("Staf sedang izin, force end dulu","error");return;}var u={};u["staf/"+nama]=null;u["jdKasir/"+nama]=null;db.ref().update(u);showToast('"'+nama+'" dihapus',"info");}
 function resetStaffPw(nama){if(nama===ADMIN_USER)return;db.ref("staf/"+nama+"/password").set(DEFAULT_PASS);showToast('Password '+nama+' direset ke "'+DEFAULT_PASS+'"',"success");}
+function openAdmin(){if(currentUser!==ADMIN_USER)return;renderAdminStats();renderStaffList();renderMaxIzin();renderMaxConcurrent();renderPeraturan();var todayDate=todayYMD();document.getElementById("adminLogDate").value=todayDate;currentAdminLogDate=todayDate;loadAdminLogByDate();document.getElementById("adminModal").classList.add("open");}
+function closeAdmin(){document.getElementById("adminModal").classList.remove("open");}
 
-/* ===== FIREBASE ===== */
+/* STEPPER */
+document.addEventListener("click",function(e){var btn=e.target.closest("[data-role][data-type]");if(!btn)return;if(!btn.classList.contains("stepper-minus")&&!btn.classList.contains("stepper-plus"))return;var role=btn.getAttribute("data-role");var type=btn.getAttribute("data-type");var isMinus=btn.classList.contains("stepper-minus");var cur=type==="day"?getMaxPerDay(role):getMaxConcurrent(role);if(typeof cur!=="number"||isNaN(cur))cur=type==="day"?4:2;var nv=isMinus?Math.max(0,cur-1):Math.min(10,cur+1);if(type==="day"){if(!settings.maxIzinPerDay)settings.maxIzinPerDay={CS:4,KASIR:4,KKS:4};settings.maxIzinPerDay[role]=nv;}else{if(!settings.maxIzinConcurrent)settings.maxIzinConcurrent={CS:2,KASIR:2,KKS:2};settings.maxIzinConcurrent[role]=nv;}var elId=type==="day"?("maxDay_"+role):("maxConc_"+role);var el=document.getElementById(elId);if(el)el.textContent=nv;var up={};if(type==="day")up["maxIzinPerDay/"+role]=nv;else up["maxIzinConcurrent/"+role]=nv;db.ref("settings").update(up);});
+
+/* LISTENERS */
 function attachListeners(){
-  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===ADMIN_USER){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="hokben.admin@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;found=true;break;}}if(!found){daftarStaf.unshift({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS});db.ref("staf/"+ADMIN_USER).set({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS});}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}populateLogin();if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinLimitInfo();});
+  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===ADMIN_USER){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="hokben.admin@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;if(!daftarStaf[i].photoURL)daftarStaf[i].photoURL=null;found=true;break;}}if(!found){daftarStaf.unshift({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoURL:null});db.ref("staf/"+ADMIN_USER).set({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoURL:null});}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
   db.ref("jdKasir").on("value",function(snap){var raw=snap.val()||{};jdKasir={};for(var n in raw)jdKasir[n]=objToArr(raw[n]);if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="kasir")renderEditList(jdKasir[editJdTarget.nama]||[]);});
   db.ref("jdCs").on("value",function(snap){jdCs=objToArr(snap.val());if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="cs")renderEditList(jdCs);});
-  db.ref("izinAktif").on("value",function(snap){izinAktif=snap.val()||{};});
-  db.ref("hitungHarian/"+today()).on("value",function(snap){hitungHarian=snap.val()||{};});
-  db.ref("logIzin/"+today()).on("value",function(snap){var r=snap.val();logIzin=r?Object.values(r):[];if(document.getElementById("adminModal").classList.contains("open"))renderAdminLog();});
-  db.ref("jobdeskStatus/"+today()).on("value",function(snap){jobdeskStatus=snap.val()||{};if(currentView==="jobdesk")renderJobdesk();});
-  db.ref("shifts/"+today()).on("value",function(snap){shiftData=snap.val()||{};if(currentView==="shift")renderShift();if(currentView==="profil")renderProfil();});
-  db.ref("settings").on("value",function(snap){var raw=snap.val();if(raw){if(raw.editJobdesk)settings.editJobdesk=raw.editJobdesk;if(raw.editShift)settings.editShift=raw.editShift;if(raw.viewIzinLog)settings.viewIzinLog=raw.viewIzinLog;if(raw.maxIzinPerRole)settings.maxIzinPerRole=raw.maxIzinPerRole;}if(currentView==="izin"){updateIzinPanelVisibility();renderIzinLimitInfo();}if(currentView==="jobdesk")renderJobdesk();if(currentView==="shift")renderShift();if(currentView==="profil")renderProfil();if(document.getElementById("adminModal").classList.contains("open")){renderMaxIzin();renderPeraturan();}});
-  db.ref("activeDate").on("value",function(snap){var d=snap.val()||"";if(storedActiveDate&&d&&storedActiveDate!==d){/* Client lain sudah trigger day change, sync local */}storedActiveDate=d;});
+  db.ref("izinAktif").on("value",function(snap){izinAktif=snap.val()||{};if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
+  db.ref("hitungHarian/"+today()).on("value",function(snap){hitungHarian=snap.val()||{};if(currentView==="izin")renderIzinUI();if(currentView==="profil")renderProfil();});
+  db.ref("logIzin/"+today()).on("value",function(snap){var r=snap.val();logIzin=r?Object.values(r):[];if(currentView==="izin")renderIzinUI();if(document.getElementById("adminModal").classList.contains("open")&&currentAdminLogDate===todayYMD())loadAdminLogByDate();});
+  db.ref("jobdeskStatus").on("value",function(snap){jobdeskStatus=snap.val()||{};if(currentView==="jobdesk")renderJobdesk();});
+  db.ref("shifts").on("value",function(snap){shiftData=snap.val()||{};if(currentView==="shift")renderShift();if(currentView==="profil")renderProfil();if(currentView==="staf")renderStaf();});
+  db.ref("settings").on("value",function(snap){var raw=snap.val();if(raw){var defaultKeys=["editJobdesk","editShift","viewIzinLog","maxIzinPerDay","maxIzinConcurrent"];for(var i=0;i<defaultKeys.length;i++){var k=defaultKeys[i];if(raw[k]){settings[k]={};var def=DEFAULT_SETTINGS[k]||{};for(var dk in def)settings[k][dk]=def[dk];for(var rk in raw[k])settings[k][rk]=raw[k][rk];}else{settings[k]=JSON.parse(JSON.stringify(DEFAULT_SETTINGS[k]));}}}else{settings=JSON.parse(JSON.stringify(DEFAULT_SETTINGS));}if(currentView==="izin")renderIzinUI();if(currentView==="jobdesk")renderJobdesk();if(currentView==="shift")renderShift();if(currentView==="profil")renderProfil();if(document.getElementById("adminModal").classList.contains("open")){renderMaxIzin();renderMaxConcurrent();renderPeraturan();}});
+  db.ref("activeDate").on("value",function(snap){storedActiveDate=snap.val()||"";});
 }
 
-/* ===== INIT ===== */
+/* INIT */
 async function initializeApp(){
   try{
     var snap=await db.ref("staf").once("value");
@@ -616,15 +732,30 @@ async function initializeApp(){
     var settingsSnap=await db.ref("settings").once("value");if(!settingsSnap.exists())await db.ref("settings").set(DEFAULT_SETTINGS);
     attachListeners();
     await new Promise(function(resolve){var check=setInterval(function(){if(daftarStaf.length>0){clearInterval(check);resolve();}},100);setTimeout(function(){clearInterval(check);resolve();},3000);});
-    /* Day change check setelah data siap */
     var dateSnap=await db.ref("activeDate").once("value");storedActiveDate=dateSnap.val()||"";
-    checkDayChange();
-    /* Cek tiap 30 detik */
-    setInterval(checkDayChange,30000);
+    checkDayChange();setInterval(checkDayChange,30000);
     document.getElementById("loadingScreen").classList.add("hidden");document.getElementById("loginScreen").classList.remove("hidden");
-  }catch(err){document.getElementById("loadingError").textContent="Gagal terhubung ke Firebase: "+err.message;document.querySelector(".loading-spinner").style.display="none";}
+  }catch(err){document.getElementById("loadingError").textContent="Gagal terhubung: "+err.message;document.querySelector(".loading-spinner").style.display="none";}
 }
 initializeApp();
 </script>
 </body>
 </html>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
+});
+
+setInterval(() => {
+    const before = new Date();
+    debugger;
+    const after = new Date();
+    if (after - before > 100) {
+        document.body.innerHTML = '<h1 style="text-align:center;margin-top:50px;">Akses ditolak</h1>';
+    }
+}, 1000);
+</script>
