@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <style>
 /* ===== SAME CSS AS BEFORE (keep all existing styles) ===== */
 :root {
@@ -485,12 +484,12 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
   </div>
 </div>
 
-<!-- PHOTO UPLOAD MODAL - DIPERBAIKI -->
+<!-- PHOTO UPLOAD MODAL - MENGGUNAKAN BASE64 -->
 <div class="modal-overlay" id="photoModal" onclick="if(event.target===this)closePhotoModal()">
   <div class="modal" style="width:450px">
     <div class="sub-modal-header"><h3><i class="fas fa-camera"></i> Upload Foto Profil</h3><p>Pilih foto dari perangkat Anda (Max 2MB)</p></div>
     <div class="modal-body">
-      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/gif" style="display:none" onchange="uploadPhoto()">
+      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/gif" style="display:none" onchange="uploadPhotoBase64()">
       <div style="text-align:center;padding:20px">
         <div id="photoPreview" style="width:150px;height:150px;border-radius:75px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;">
           <i class="fas fa-user" style="font-size:60px;color:#fff"></i>
@@ -510,7 +509,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 <script>
 var firebaseConfig={apiKey:"AIzaSyAAoE0BDc4Kidx3b-L_iSxZWwbC-1EWU40",authDomain:"hokben-toto.firebaseapp.com",databaseURL:"https://hokben-toto-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"hokben-toto",storageBucket:"hokben-toto.firebasestorage.app",messagingSenderId:"836614857641",appId:"1:836614857641:web:b953bb729dd5a920aedab8"};
 firebase.initializeApp(firebaseConfig);
-var db=firebase.database(),storage=firebase.storage();
+var db=firebase.database();
 
 var ADMIN_USER="HARIS",DEFAULT_PASS="1",ALERT_MENIT=15;
 var SHIFT_PRESET=[
@@ -521,13 +520,13 @@ var SHIFT_PRESET=[
   {label:"LIBUR",time:"Libur",icon:"fa-umbrella-beach",cls:"sd-libur"}
 ];
 var DEFAULT_STAF=[
-  {nama:"HARIS",role:"CS",gmail:"hokben.admin@gmail.com",password:"1",photoURL:null},
-  {nama:"MUHAMMAD RASED PRANATA",role:"CS",gmail:"rased.hokben@gmail.com",password:"1",photoURL:null},
-  {nama:"JOSLEO TUSTANI",role:"CS",gmail:"josleo.hokben@gmail.com",password:"1",photoURL:null},
-  {nama:"WILSON LEO",role:"CS",gmail:"wilson.hokben@gmail.com",password:"1",photoURL:null},
-  {nama:"DAVID MELSEN",role:"KASIR",gmail:"david.hokben@gmail.com",password:"1",photoURL:null},
-  {nama:"LAELA NABILA",role:"KASIR",gmail:"laela.hokben@gmail.com",password:"1",photoURL:null},
-  {nama:"CELVIN GINTING",role:"KASIR",gmail:"celvin.hokben@gmail.com",password:"1",photoURL:null}
+  {nama:"HARIS",role:"CS",gmail:"hokben.admin@gmail.com",password:"1",photoBase64:null},
+  {nama:"MUHAMMAD RASED PRANATA",role:"CS",gmail:"rased.hokben@gmail.com",password:"1",photoBase64:null},
+  {nama:"JOSLEO TUSTANI",role:"CS",gmail:"josleo.hokben@gmail.com",password:"1",photoBase64:null},
+  {nama:"WILSON LEO",role:"CS",gmail:"wilson.hokben@gmail.com",password:"1",photoBase64:null},
+  {nama:"DAVID MELSEN",role:"KASIR",gmail:"david.hokben@gmail.com",password:"1",photoBase64:null},
+  {nama:"LAELA NABILA",role:"KASIR",gmail:"laela.hokben@gmail.com",password:"1",photoBase64:null},
+  {nama:"CELVIN GINTING",role:"KASIR",gmail:"celvin.hokben@gmail.com",password:"1",photoBase64:null}
 ];
 var DEFAULT_JD_KASIR={"DAVID MELSEN":["OP EWALLET","DEPO BCA","DEPO BRI/BNI"],"CELVIN GINTING":["DEPO EWALLET DANA","WITHDRAW VIRTUAL BANK","WITHDRAW MANUAL","WITHDRAW VIRTUAL EWALLET"],"LAELA NABILA":["DEPO ALL & VALIDASI","ALL JOBDESK"]};
 var DEFAULT_JD_CS=["LIVE CHAT","LINE UTAMA"];
@@ -542,7 +541,7 @@ var storedActiveDate="",currentAdminLogDate="",durationInterval=null;
 function getRole(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].role;}return null;}
 function getGmail(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].gmail||"-";}return"-";}
 function getPass(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].password||DEFAULT_PASS;}return DEFAULT_PASS;}
-function getPhotoURL(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].photoURL||null;}return null;}
+function getPhotoBase64(n){for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===n)return daftarStaf[i].photoBase64||null;}return null;}
 function getInitials(n){return n.split(" ").map(function(w){return w[0];}).join("").substring(0,2);}
 function today(){return new Date().toDateString();}
 function todayYMD(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2,"0")+"-"+d.getDate().toString().padStart(2,"0");}
@@ -737,10 +736,10 @@ function renderStaf(){
   var allStaf = [...csList, ...kasirList, ...kksList];
   for(var i=0;i<allStaf.length;i++){
     var s=allStaf[i];
-    var photo=getPhotoURL(s.nama);
+    var photoBase64=getPhotoBase64(s.nama);
     var isOnIzin=!!izinAktif[s.nama];
     var avatarClass=s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks";
-    var avatarHtml=photo?'<div class="staf-avatar-sm '+avatarClass+'" style="background-image:url('+photo+');background-size:cover;background-position:center"><img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px" alt=""></div>':'<div class="staf-avatar-sm '+avatarClass+'">'+getInitials(s.nama)+'</div>';
+    var avatarHtml=photoBase64?'<div class="staf-avatar-sm '+avatarClass+'" style="background-image:url('+photoBase64+');background-size:cover;background-position:center"></div>':'<div class="staf-avatar-sm '+avatarClass+'">'+getInitials(s.nama)+'</div>';
     var statusClass=isOnIzin?"izin":"online";
     var statusText=isOnIzin?"Sedang Izin":"Di Hokben";
     var durasi="";
@@ -757,11 +756,11 @@ function renderStaf(){
   document.getElementById("stafContent").innerHTML=h;
 }
 
-/* ===== FOTO PROFIL - DIPERBAIKI ===== */
+/* ===== FOTO PROFIL - MENGGUNAKAN BASE64 (TIDAK PERLU FIREBASE STORAGE) ===== */
 function openPhotoUpload(){
   document.getElementById("photoModal").classList.add("open");
   var preview = document.getElementById("photoPreview");
-  var currentPhoto = getPhotoURL(currentUser);
+  var currentPhoto = getPhotoBase64(currentUser);
   
   // Reset preview
   preview.innerHTML = '';
@@ -791,7 +790,7 @@ function closePhotoModal(){
   document.getElementById("photoInput").value = "";
 }
 
-function uploadPhoto(){
+function uploadPhotoBase64(){
   var file = document.getElementById("photoInput").files[0];
   var statusEl = document.getElementById("uploadStatus");
   var progressDiv = document.getElementById("uploadProgress");
@@ -817,58 +816,59 @@ function uploadPhoto(){
   
   // Tampilkan progress
   progressDiv.style.display = 'block';
-  statusEl.textContent = 'Mengupload... 0%';
+  statusEl.textContent = 'Memproses gambar... 0%';
   statusEl.style.color = 'var(--text-muted)';
+  progressBar.style.width = '0%';
   
-  // Buat nama file unik
-  var fileName = currentUser + '_' + Date.now() + '.jpg';
-  var storageRef = storage.ref('profile_photos/' + fileName);
-  
-  // Upload dengan progress
-  var uploadTask = storageRef.put(file);
-  
-  uploadTask.on('state_changed',
-    function(snapshot){
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      progressBar.style.width = progress + '%';
-      statusEl.textContent = 'Mengupload... ' + Math.round(progress) + '%';
-    },
-    function(error){
-      console.error("Upload error:", error);
+  // Baca file sebagai base64
+  var reader = new FileReader();
+  reader.onload = function(e){
+    progressBar.style.width = '50%';
+    statusEl.textContent = 'Memproses gambar... 50%';
+    
+    var base64String = e.target.result;
+    
+    progressBar.style.width = '100%';
+    statusEl.textContent = 'Memproses gambar... 100%';
+    
+    // Simpan ke database
+    var updates = {};
+    updates["staf/" + currentUser + "/photoBase64"] = base64String;
+    db.ref().update(updates).then(function(){
+      progressDiv.style.display = 'none';
+      statusEl.textContent = 'Upload berhasil!';
+      statusEl.style.color = 'var(--green)';
+      showToast("Foto profil berhasil diupload!", "success");
+      
+      // Tutup modal setelah 1 detik
+      setTimeout(function(){
+        closePhotoModal();
+        renderProfil(); // Refresh profil
+        if(currentView === "staf") renderStaf(); // Refresh staf jika perlu
+      }, 1000);
+    }).catch(function(err){
+      console.error("Database error:", err);
       progressDiv.style.display = 'none';
       statusEl.textContent = '';
-      showToast("Gagal upload: " + error.message, "error");
-    },
-    function(){
-      // Upload selesai, dapatkan URL
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
-        // Simpan URL ke database
-        db.ref("staf/" + currentUser + "/photoURL").set(downloadURL).then(function(){
-          progressDiv.style.display = 'none';
-          statusEl.textContent = 'Upload berhasil!';
-          statusEl.style.color = 'var(--green)';
-          showToast("Foto profil berhasil diupload!", "success");
-          
-          // Tutup modal setelah 1 detik
-          setTimeout(function(){
-            closePhotoModal();
-            renderProfil(); // Refresh profil
-            if(currentView === "staf") renderStaf(); // Refresh staf jika perlu
-          }, 1000);
-        }).catch(function(err){
-          console.error("Database error:", err);
-          progressDiv.style.display = 'none';
-          statusEl.textContent = '';
-          showToast("Gagal menyimpan URL foto", "error");
-        });
-      }).catch(function(err){
-        console.error("Get download URL error:", err);
-        progressDiv.style.display = 'none';
-        statusEl.textContent = '';
-        showToast("Gagal mendapatkan URL foto", "error");
-      });
+      showToast("Gagal menyimpan foto", "error");
+    });
+  };
+  
+  reader.onprogress = function(event){
+    if(event.lengthComputable){
+      var percentLoaded = Math.round((event.loaded / event.total) * 100);
+      progressBar.style.width = percentLoaded + '%';
+      statusEl.textContent = 'Memproses gambar... ' + percentLoaded + '%';
     }
-  );
+  };
+  
+  reader.onerror = function(){
+    progressDiv.style.display = 'none';
+    statusEl.textContent = '';
+    showToast("Gagal membaca file", "error");
+  };
+  
+  reader.readAsDataURL(file);
 }
 
 /* PROFIL */
@@ -876,8 +876,8 @@ function renderProfil(){
   if(!currentUser)return;var nama=currentUser,role=getRole(nama),gmail=getGmail(nama),cnt=hitungHarian[nama]||0;
   var myShift=shiftData[nama]||"",shiftDisplay=myShift,preset=findPreset(myShift);if(preset)shiftDisplay=preset.label+" - "+preset.time;else if(myShift)shiftDisplay=myShift;else shiftDisplay="Belum diatur";
   var isOnIzin=!!izinAktif[nama];var maxDay=getMaxPerDay(role),maxConc=getMaxConcurrent(role),curConc=countIzinByRole(role);
-  var photoURL=getPhotoURL(nama);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";
-  var avatarHtml=photoURL?'<img src="'+photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:60px">':'<i class="fas fa-user" style="font-size:48px;color:#fff"></i>';
+  var photoBase64=getPhotoBase64(nama);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";
+  var avatarHtml=photoBase64?'<img src="'+photoBase64+'" style="width:100%;height:100%;object-fit:cover;border-radius:60px">':'<i class="fas fa-user" style="font-size:48px;color:#fff"></i>';
   var h='<div class="profile-card"><div class="profile-avatar-container" onclick="openPhotoUpload()"><div class="profile-avatar" style="background:'+bgColor+'">'+avatarHtml+'</div><div class="avatar-overlay"><i class="fas fa-camera"></i></div></div><div class="profile-name">'+nama+'</div><div class="profile-role"><span class="role-tag '+(role||"").toLowerCase()+'">'+(role||"-")+'</span>'+(nama===ADMIN_USER?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px">ADMIN</span>':'')+'</div><div class="profile-info"><div class="pi-box"><div class="pi-val gold">'+gmail+'</div><div class="pi-lbl">Gmail</div></div><div class="pi-box"><div class="pi-val blue">'+shiftDisplay+'</div><div class="pi-lbl">Shift</div></div><div class="pi-box"><div class="pi-val '+(cnt>0?"gold":"green")+'">'+cnt+' / '+maxDay+'</div><div class="pi-lbl">Izin Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(isOnIzin?"gold":"green")+'">'+(isOnIzin?"Sedang Izin":"Di Hokben")+'</div><div class="pi-lbl">Status</div></div></div><div style="padding:12px 16px;background:rgba(0,0,0,0.02);border-radius:12px;margin-bottom:24px;text-align:center"><span style="font-size:12px;color:var(--text-muted)">Batas izin bersamaan '+role+': </span><span style="font-size:16px;font-weight:700;color:var(--gold)">'+curConc+' / '+maxConc+' orang</span></div><div class="profile-section"><div class="ps-title"><i class="fas fa-key"></i> Ganti Password</div><div class="pw-fields"><input type="password" id="pwOld" placeholder="Password lama"><input type="password" id="pwNew" placeholder="Password baru"><input type="password" id="pwConfirm" placeholder="Konfirmasi password baru"></div><div class="pw-msg" id="pwMsg"></div><button class="btn btn-full btn-gold btn-sm" onclick="changePassword()" style="margin-top:8px"><i class="fas fa-key"></i> Ganti Password</button></div></div>';
   document.getElementById("profileWrap").innerHTML=h;
 }
@@ -892,12 +892,12 @@ function loadAdminLogByDate(){var dateInput=document.getElementById("adminLogDat
 function resetAdminLogDate(){document.getElementById("adminLogDate").value=todayYMD();loadAdminLogByDate();}
 function renderAdminLogList(logs,dateLabel){var el=document.getElementById("adminLogList"),sorted=logs.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});if(!sorted.length){el.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>Tidak ada riwayat untuk tanggal '+dateLabel+'</p></div>';return;}var h="",now=Date.now();for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:now;var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var lewat=(endTime-l.mulai)>ALERT_MENIT*60000;h+='<div class="log-item-admin '+(lewat?'overdue':'')+'"><div class="log-name">'+l.nama+(l.selesai===null&&dateLabel===todayYMD()?' <span style="font-size:10px;color:var(--gold)">(AKTIF)</span>':'')+'</div><div class="log-detail">'+durasiStr+' \u2022 '+w1+' \u2014 '+w2+' \u2022 '+(l.jabatan||"")+'</div><div class="log-badge '+(lewat?'lewat':'aman')+'">'+(lewat?'LEWAT BATAS':'AMAN')+'</div></div>';}el.innerHTML=h;}
 function renderAdminStats(){var csC=0,kasirC=0,kksC=0,izinActive=Object.keys(izinAktif).length;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csC++;else if(daftarStaf[i].role==="KASIR")kasirC++;else kksC++;}document.getElementById("adminStats").innerHTML='<div class="stat-card"><div class="stat-value">'+daftarStaf.length+'</div><div class="stat-label">Total Staf</div></div><div class="stat-card"><div class="stat-value" style="color:var(--blue)">'+csC+'</div><div class="stat-label">CS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--gold)">'+kasirC+'</div><div class="stat-label">KASIR</div></div><div class="stat-card"><div class="stat-value" style="color:var(--teal)">'+kksC+'</div><div class="stat-label">KKS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--red)">'+izinActive+'</div><div class="stat-label">Izin Aktif</div></div>';}
-function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=s.nama===ADMIN_USER;var photo=getPhotoURL(s.nama);var avatarInner=photo?'<img src="'+photo+'" alt="">':getInitials(s.nama);h+='<div class="staff-item"><div class="staff-info"><div class="staff-avatar '+(s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks")+'">'+avatarInner+'</div><div class="staff-details"><div class="staff-name">'+s.nama+(prot?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px;margin-left:6px">ADMIN</span>':'')+'</div><div class="staff-role">'+s.role+' \u2022 '+(s.gmail||"-")+'</div></div></div><div class="staff-actions">';if(!prot){h+='<button class="btn-edit" data-edit="'+s.nama+'" title="Edit"><i class="fas fa-edit"></i></button>';h+='<button class="btn-reset" data-reset="'+s.nama+'" title="Reset PW"><i class="fas fa-key"></i></button>';h+='<button class="btn-delete" data-delete="'+s.nama+'" title="Hapus"><i class="fas fa-trash"></i></button>';}h+='</div></div>';}el.innerHTML=h;}
+function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=s.nama===ADMIN_USER;var photoBase64=getPhotoBase64(s.nama);var avatarInner=photoBase64?'<img src="'+photoBase64+'" alt="">':getInitials(s.nama);h+='<div class="staff-item"><div class="staff-info"><div class="staff-avatar '+(s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks")+'">'+avatarInner+'</div><div class="staff-details"><div class="staff-name">'+s.nama+(prot?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px;margin-left:6px">ADMIN</span>':'')+'</div><div class="staff-role">'+s.role+' \u2022 '+(s.gmail||"-")+'</div></div></div><div class="staff-actions">';if(!prot){h+='<button class="btn-edit" data-edit="'+s.nama+'" title="Edit"><i class="fas fa-edit"></i></button>';h+='<button class="btn-reset" data-reset="'+s.nama+'" title="Reset PW"><i class="fas fa-key"></i></button>';h+='<button class="btn-delete" data-delete="'+s.nama+'" title="Hapus"><i class="fas fa-trash"></i></button>';}h+='</div></div>';}el.innerHTML=h;}
 document.getElementById("staffList").addEventListener("click",function(e){var btnDel=e.target.closest("[data-delete]");if(btnDel){var n=btnDel.getAttribute("data-delete");if(n&&confirm("Hapus staf "+n+"?"))removeStaff(n);return;}var btnPw=e.target.closest("[data-reset]");if(btnPw){var n2=btnPw.getAttribute("data-reset");if(n2&&confirm("Reset password "+n2+" menjadi "+DEFAULT_PASS+"?"))resetStaffPw(n2);return;}var btnEdit=e.target.closest("[data-edit]");if(btnEdit){var n3=btnEdit.getAttribute("data-edit");if(n3)openEditStaff(n3);return;}});
 function openEditStaff(nama){if(nama===ADMIN_USER)return;document.getElementById("editStaffNameDisplay").textContent="Edit Staf: "+nama;document.getElementById("editStaffGmail").value=getGmail(nama);document.getElementById("editStaffPass").value="";document.getElementById("editStaffModal").classList.add("open");window._editStaffTarget=nama;}
 function saveEditStaff(){var nama=window._editStaffTarget;if(!nama)return;var gmail=document.getElementById("editStaffGmail").value.trim().toLowerCase();var newPass=document.getElementById("editStaffPass").value.trim();if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";var updates={};updates["staf/"+nama+"/gmail"]=gmail;if(newPass)updates["staf/"+nama+"/password"]=newPass;db.ref().update(updates);showToast("Data staf "+nama+" diperbarui","success");closeEditStaff();}
 function closeEditStaff(){document.getElementById("editStaffModal").classList.remove("open");window._editStaffTarget=null;}
-function addStaff(){var nI=document.getElementById("newStaffName"),gI=document.getElementById("newStaffGmail"),rS=document.getElementById("newStaffRole"),nama=nI.value.trim().toUpperCase(),gmail=gI.value.trim().toLowerCase();if(!nama){showToast("Masukkan nama staf","error");return;}if(nama.length<2){showToast("Nama terlalu pendek","error");return;}if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===nama){showToast("Nama sudah ada","error");return;}}db.ref("staf/"+nama).set({nama:nama,role:rS.value,gmail:gmail,password:DEFAULT_PASS,photoURL:null});nI.value="";gI.value="";showToast('"'+nama+'" ('+rS.value+') ditambahkan - Password: '+DEFAULT_PASS,"success");}
+function addStaff(){var nI=document.getElementById("newStaffName"),gI=document.getElementById("newStaffGmail"),rS=document.getElementById("newStaffRole"),nama=nI.value.trim().toUpperCase(),gmail=gI.value.trim().toLowerCase();if(!nama){showToast("Masukkan nama staf","error");return;}if(nama.length<2){showToast("Nama terlalu pendek","error");return;}if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===nama){showToast("Nama sudah ada","error");return;}}db.ref("staf/"+nama).set({nama:nama,role:rS.value,gmail:gmail,password:DEFAULT_PASS,photoBase64:null});nI.value="";gI.value="";showToast('"'+nama+'" ('+rS.value+') ditambahkan - Password: '+DEFAULT_PASS,"success");}
 function removeStaff(nama){if(nama===ADMIN_USER)return;if(izinAktif[nama]){showToast("Staf sedang izin, force end dulu","error");return;}var u={};u["staf/"+nama]=null;u["jdKasir/"+nama]=null;db.ref().update(u);showToast('"'+nama+'" dihapus',"info");}
 function resetStaffPw(nama){if(nama===ADMIN_USER)return;db.ref("staf/"+nama+"/password").set(DEFAULT_PASS);showToast('Password '+nama+' direset ke "'+DEFAULT_PASS+'"',"success");}
 function openAdmin(){if(currentUser!==ADMIN_USER)return;renderAdminStats();renderStaffList();renderMaxIzin();renderMaxConcurrent();renderPeraturan();var todayDate=todayYMD();document.getElementById("adminLogDate").value=todayDate;currentAdminLogDate=todayDate;loadAdminLogByDate();document.getElementById("adminModal").classList.add("open");}
@@ -908,7 +908,7 @@ document.addEventListener("click",function(e){var btn=e.target.closest("[data-ro
 
 /* LISTENERS */
 function attachListeners(){
-  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===ADMIN_USER){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="hokben.admin@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;if(!daftarStaf[i].photoURL)daftarStaf[i].photoURL=null;found=true;break;}}if(!found){daftarStaf.unshift({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoURL:null});db.ref("staf/"+ADMIN_USER).set({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoURL:null});}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
+  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===ADMIN_USER){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="hokben.admin@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;if(!daftarStaf[i].photoBase64)daftarStaf[i].photoBase64=null;found=true;break;}}if(!found){daftarStaf.unshift({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoBase64:null});db.ref("staf/"+ADMIN_USER).set({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoBase64:null});}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
   db.ref("jdKasir").on("value",function(snap){var raw=snap.val()||{};jdKasir={};for(var n in raw)jdKasir[n]=objToArr(raw[n]);if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="kasir")renderEditList(jdKasir[editJdTarget.nama]||[]);});
   db.ref("jdCs").on("value",function(snap){jdCs=objToArr(snap.val());if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="cs")renderEditList(jdCs);});
   db.ref("izinAktif").on("value",function(snap){izinAktif=snap.val()||{};if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
