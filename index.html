@@ -26,6 +26,8 @@
   --blue-dim: rgba(52,152,219,0.1);
   --teal: #1abc9c;
   --teal-dim: rgba(26,188,156,0.1);
+  --purple: #8b5cf6;
+  --purple-dim: rgba(139,92,246,0.1);
   --text: #2c3e50;
   --text-muted: #7f8c8d;
   --border: rgba(0,0,0,0.08);
@@ -90,6 +92,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .role-tag.cs { background: var(--blue-dim); color: var(--blue); }
 .role-tag.kasir { background: var(--gold-dim); color: var(--gold); }
 .role-tag.kks { background: var(--teal-dim); color: var(--teal); }
+.role-tag.leader { background: var(--purple-dim); color: var(--purple); }
 .btn-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .btn-icon:hover { color: var(--gold); border-color: var(--border-gold); background: var(--gold-dim); }
 #btnAdmin { display: none; }
@@ -147,7 +150,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .hd-gold { background: linear-gradient(135deg, var(--gold), var(--orange)); }
 .hd-blue { background: linear-gradient(135deg, var(--blue), #2563eb); }
 .hd-teal { background: linear-gradient(135deg, var(--teal), #16a085); }
-.hd-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.hd-purple { background: linear-gradient(135deg, var(--purple), #7c3aed); }
 .sec-actions { display: flex; gap: 12px; align-items: center; }
 .stat-pill { padding: 6px 14px; border-radius: 10px; background: var(--card-light); border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; font-size: 12px; }
 .stat-pill .sv { font-weight: 700; font-size: 16px; }
@@ -166,6 +169,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .av-k { background: linear-gradient(135deg, var(--gold), var(--orange)); }
 .av-c { background: linear-gradient(135deg, var(--blue), #2563eb); }
 .av-t { background: linear-gradient(135deg, var(--teal), #16a085); }
+.av-l { background: linear-gradient(135deg, var(--purple), #7c3aed); }
 .pbar { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin: 16px 0; }
 .pfill { height: 100%; border-radius: 3px; transition: width .5s; }
 .pf-g { background: linear-gradient(90deg, var(--green), #2ecc71); }
@@ -209,6 +213,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .staf-avatar-sm.cs { background: linear-gradient(135deg, var(--blue), #2563eb); }
 .staf-avatar-sm.kasir { background: linear-gradient(135deg, var(--gold), var(--orange)); }
 .staf-avatar-sm.kks { background: linear-gradient(135deg, var(--teal), #16a085); }
+.staf-avatar-sm.leader { background: linear-gradient(135deg, var(--purple), #7c3aed); }
 .staf-name-text { font-weight: 600; }
 .status-badge-staf { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .status-badge-staf.online { background: var(--green-dim); color: var(--green); }
@@ -283,6 +288,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .staff-avatar.cs { background: linear-gradient(135deg, var(--blue), #2563eb); }
 .staff-avatar.kasir { background: linear-gradient(135deg, var(--gold), var(--orange)); }
 .staff-avatar.kks { background: linear-gradient(135deg, var(--teal), #16a085); }
+.staff-avatar.leader { background: linear-gradient(135deg, var(--purple), #7c3aed); }
 .staff-details .staff-name { font-weight: 700; margin-bottom: 4px; }
 .staff-details .staff-role { font-size: 11px; color: var(--text-muted); }
 .staff-actions { display: flex; gap: 8px; }
@@ -450,7 +456,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
       <div class="section-title" style="margin-top:20px"><i class="fas fa-user-friends"></i> Daftar Staf</div>
       <div id="staffList" style="max-height:300px;overflow-y:auto;margin-bottom:16px"></div>
       <div class="admin-form">
-        <div class="form-row"><div class="full-width"><input type="text" id="newStaffName" class="form-input" placeholder="Nama Lengkap"></div><div><input type="email" id="newStaffGmail" class="form-input" placeholder="Email Gmail"></div><div><select id="newStaffRole" class="form-input"><option value="CS">CS</option><option value="KASIR">KASIR</option><option value="KKS">KKS</option></select></div></div>
+        <div class="form-row"><div class="full-width"><input type="text" id="newStaffName" class="form-input" placeholder="Nama Lengkap"></div><div><input type="email" id="newStaffGmail" class="form-input" placeholder="Email Gmail"></div><div><select id="newStaffRole" class="form-input"><option value="CS">CS</option><option value="KASIR">KASIR</option><option value="KKS">KKS</option><option value="LEADER">LEADER</option></select></div></div>
         <button class="btn btn-gold btn-sm" onclick="addStaff()" style="width:100%"><i class="fas fa-plus"></i> Tambah Staf Baru</button>
       </div>
       <div class="section-title" style="margin-top:20px"><i class="fas fa-archive"></i> Arsip Riwayat Izin</div>
@@ -484,7 +490,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
   </div>
 </div>
 
-<!-- PHOTO UPLOAD MODAL - MENGGUNAKAN BASE64 -->
+<!-- PHOTO UPLOAD MODAL -->
 <div class="modal-overlay" id="photoModal" onclick="if(event.target===this)closePhotoModal()">
   <div class="modal" style="width:450px">
     <div class="sub-modal-header"><h3><i class="fas fa-camera"></i> Upload Foto Profil</h3><p>Pilih foto dari perangkat Anda (Max 2MB)</p></div>
@@ -511,7 +517,24 @@ var firebaseConfig={apiKey:"AIzaSyAAoE0BDc4Kidx3b-L_iSxZWwbC-1EWU40",authDomain:
 firebase.initializeApp(firebaseConfig);
 var db=firebase.database();
 
-var ADMIN_USER="HARIS",DEFAULT_PASS="1",ALERT_MENIT=15;
+// ===== MULTIPLE ADMIN USERS & LEADER =====
+var ADMIN_USERS = ["HARIS"];  // HARIS adalah admin
+var LEADER_USERS = ["HENDRY"]; // HENDRY adalah LEADER (memiliki akses penuh seperti admin)
+var DEFAULT_PASS = "1";
+var ALERT_MENIT = 15;
+
+function isAdmin(user) {
+    return ADMIN_USERS.includes(user);
+}
+
+function isLeader(user) {
+    return LEADER_USERS.includes(user);
+}
+
+function hasFullAccess(user) {
+    return isAdmin(user) || isLeader(user);
+}
+
 var SHIFT_PRESET=[
   {label:"PAGI",time:"07:45 - 17:45",icon:"fa-sun",cls:"sd-pagi"},
   {label:"SIANG",time:"11:45 - 21:45",icon:"fa-cloud-sun",cls:"sd-siang"},
@@ -521,6 +544,7 @@ var SHIFT_PRESET=[
 ];
 var DEFAULT_STAF=[
   {nama:"HARIS",role:"CS",gmail:"hokben.admin@gmail.com",password:"1",photoBase64:null},
+  {nama:"HENDRY",role:"LEADER",gmail:"hendry.hokben@gmail.com",password:"1",photoBase64:null},
   {nama:"MUHAMMAD RASED PRANATA",role:"CS",gmail:"rased.hokben@gmail.com",password:"1",photoBase64:null},
   {nama:"JOSLEO TUSTANI",role:"CS",gmail:"josleo.hokben@gmail.com",password:"1",photoBase64:null},
   {nama:"WILSON LEO",role:"CS",gmail:"wilson.hokben@gmail.com",password:"1",photoBase64:null},
@@ -530,7 +554,7 @@ var DEFAULT_STAF=[
 ];
 var DEFAULT_JD_KASIR={"DAVID MELSEN":["OP EWALLET","DEPO BCA","DEPO BRI/BNI"],"CELVIN GINTING":["DEPO EWALLET DANA","WITHDRAW VIRTUAL BANK","WITHDRAW MANUAL","WITHDRAW VIRTUAL EWALLET"],"LAELA NABILA":["DEPO ALL & VALIDASI","ALL JOBDESK"]};
 var DEFAULT_JD_CS=["LIVE CHAT","LINE UTAMA"];
-var DEFAULT_SETTINGS={editJobdesk:{CS:true,KASIR:false,KKS:false},editShift:{CS:true,KASIR:false,KKS:false},viewIzinLog:{CS:true,KASIR:false,KKS:false},maxIzinPerDay:{CS:4,KASIR:4,KKS:4},maxIzinConcurrent:{CS:2,KASIR:2,KKS:2}};
+var DEFAULT_SETTINGS={editJobdesk:{CS:true,KASIR:false,KKS:false,LEADER:true},editShift:{CS:true,KASIR:false,KKS:false,LEADER:true},viewIzinLog:{CS:true,KASIR:false,KKS:false,LEADER:true},maxIzinPerDay:{CS:4,KASIR:4,KKS:4,LEADER:10},maxIzinConcurrent:{CS:2,KASIR:2,KKS:2,LEADER:5}};
 
 var daftarStaf=[],jdKasir={},jdCs=[];
 var izinAktif={},hitungHarian={},logIzin=[],jobdeskStatus={},shiftData={};
@@ -551,8 +575,9 @@ function jdKey(a,b,c){return a+"::"+b+"::"+c;}
 function objToArr(o){if(!o)return[];return Object.keys(o).sort(function(a,b){return Number(a)-Number(b);}).map(function(k){return o[k];});}
 function stafObjToArr(o){if(!o)return[];return Object.keys(o).map(function(k){return o[k];});}
 function arrToObj(a){var o={};for(var i=0;i<a.length;i++)o[i]=a[i];return o;}
-function canEditJd(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editJobdesk&&settings.editJobdesk[r]);}
-function canEditShift(){if(!currentUser)return false;if(currentUser===ADMIN_USER)return true;var r=getRole(currentUser);return !!(settings.editShift&&settings.editShift[r]);}
+function canEditJd(){if(!currentUser)return false;if(hasFullAccess(currentUser))return true;var r=getRole(currentUser);return !!(settings.editJobdesk&&settings.editJobdesk[r]);}
+function canEditShift(){if(!currentUser)return false;if(hasFullAccess(currentUser))return true;var r=getRole(currentUser);return !!(settings.editShift&&settings.editShift[r]);}
+function canViewIzinLog(){if(!currentUser)return false;if(hasFullAccess(currentUser))return true;var r=getRole(currentUser);return !!(settings.viewIzinLog&&settings.viewIzinLog[r]);}
 function getMaxPerDay(role){if(settings.maxIzinPerDay&&settings.maxIzinPerDay[role]!==undefined)return Number(settings.maxIzinPerDay[role]);return 4;}
 function getMaxConcurrent(role){if(settings.maxIzinConcurrent&&settings.maxIzinConcurrent[role]!==undefined)return Number(settings.maxIzinConcurrent[role]);return 2;}
 function countIzinByRole(role){var c=0;for(var n in izinAktif){if(izinAktif[n].jabatan===role)c++;}return c;}
@@ -584,10 +609,6 @@ function getSavedUser(){
   return sessionStorage.getItem("hokben_currentUser");
 }
 
-function getRememberStatus(){
-  return localStorage.getItem("hokben_rememberMe") === "true";
-}
-
 // ===== LOGIN =====
 function doLogin(){
   var name = document.getElementById("loginName").value.trim().toUpperCase();
@@ -615,7 +636,7 @@ function doLogin(){
   tag.textContent = role;
   tag.className = "role-tag " + (role || "").toLowerCase();
   document.getElementById("userName").textContent = name;
-  document.getElementById("btnAdmin").style.display = (name === ADMIN_USER) ? "flex" : "none";
+  document.getElementById("btnAdmin").style.display = hasFullAccess(name) ? "flex" : "none";
   switchView("izin");
   showToast("Selamat datang, " + name, "success");
 }
@@ -636,7 +657,7 @@ function autoLogin(){
       tag.textContent = role;
       tag.className = "role-tag " + (role || "").toLowerCase();
       document.getElementById("userName").textContent = savedUser;
-      document.getElementById("btnAdmin").style.display = (savedUser === ADMIN_USER) ? "flex" : "none";
+      document.getElementById("btnAdmin").style.display = hasFullAccess(savedUser) ? "flex" : "none";
       switchView("izin");
       showToast("Selamat datang kembali, " + savedUser, "success");
       return true;
@@ -684,36 +705,44 @@ function renderIzinUI(){
 }
 function mulaiKeluar(){var nama=currentUser,jabatan=getRole(nama);if(!jabatan){showToast("Role tidak ditemukan","error");return;}var cnt=hitungHarian[nama]||0,maxDay=getMaxPerDay(jabatan);if(cnt>=maxDay){showToast(nama+" sudah izin "+maxDay+"x hari ini","error");return;}if(izinAktif[nama]){showToast("Anda sedang dalam izin keluar","error");return;}var maxConc=getMaxConcurrent(jabatan),curConc=countIzinByRole(jabatan);if(maxConc<=0){showToast("Izin untuk jabatan "+jabatan+" saat ini dinonaktifkan (0)","error");return;}if(curConc>=maxConc){showToast("Batas izin bersamaan "+jabatan+" tercapai ("+maxConc+" orang)","error");return;}var now=Date.now();var key=nama+"_"+now;var updates={};updates["izinAktif/"+nama]={jabatan:jabatan,mulai:now,key:key};updates["logIzin/"+today()+"/"+key]={nama:nama,jabatan:jabatan,mulai:now,selesai:null};updates["hitungHarian/"+today()+"/"+nama]=(cnt+1);db.ref().update(updates);showToast(nama+" mulai izin keluar","success");}
 function akhiriKeluar(){var nama=currentUser;if(!izinAktif[nama]){showToast("Anda tidak sedang dalam izin","error");return;}var now=Date.now();var activeData=izinAktif[nama];var key=activeData.key;if(key){var updates={};updates["izinAktif/"+nama]=null;updates["logIzin/"+today()+"/"+key+"/selesai"]=now;db.ref().update(updates);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");}else{db.ref("izinAktif/"+nama).remove();db.ref("logIzin/"+today()).orderByChild("nama").equalTo(nama).once("value",function(snap){var data=snap.val();if(!data)return;var keys=Object.keys(data);for(var i=keys.length-1;i>=0;i--){if(data[keys[i]].selesai===null){db.ref("logIzin/"+today()+"/"+keys[i]+"/selesai").set(now);showToast("Izin "+nama+" telah selesai pada "+formatTime(now),"success");break;}}});}}
-function forceEndAllIzin(){if(currentUser!==ADMIN_USER)return;db.ref("izinAktif").remove();showToast("Semua izin aktif telah di-force end","success");}
-function resetAllTodayData(){if(currentUser!==ADMIN_USER)return;if(confirm("RESET DATA HARI INI?")){db.ref("izinAktif").remove();db.ref("hitungHarian/"+today()).remove();showToast("Data izin hari ini telah direset","success");}}
+function forceEndAllIzin(){if(!hasFullAccess(currentUser))return;db.ref("izinAktif").remove();showToast("Semua izin aktif telah di-force end","success");}
+function resetAllTodayData(){if(!hasFullAccess(currentUser))return;if(confirm("RESET DATA HARI INI?")){db.ref("izinAktif").remove();db.ref("hitungHarian/"+today()).remove();showToast("Data izin hari ini telah direset","success");}}
 
 /* JOBSDESK */
 function renderJobdesk(){
-  var editable=canEditJd();var totalDone=0,totalAll=0;var kasirList=[],csList=[],kksList=[];
-  for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}
-  document.getElementById("jdEditFab").style.display=editable?"flex":"none";document.getElementById("jdLock").style.display=editable?"none":"flex";var html="";
+  var editable=canEditJd();var totalDone=0,totalAll=0;var kasirList=[],csList=[],kksList=[],leaderList=[];
+  for(var i=0;i<daftarStaf.length;i++){
+    if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);
+    else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);
+    else if(daftarStaf[i].role==="KKS")kksList.push(daftarStaf[i].nama);
+    else if(daftarStaf[i].role==="LEADER")leaderList.push(daftarStaf[i].nama);
+  }
+  document.getElementById("jdEditFab").style.display=editable?"flex":"none";
+  document.getElementById("jdLock").style.display=editable?"none":"flex";
+  var html="";
   if(kasirList.length){var gD=0,gA=0;var cards="";for(var ki=0;ki<kasirList.length;ki++){var kn=kasirList[ki];var kitems=jdKasir[kn]||[];var kdone=0;for(var kj=0;kj<kitems.length;kj++){if(jobdeskStatus[jdKey(kn,kitems[kj],kj)])kdone++;}gD+=kdone;gA+=kitems.length;totalDone+=kdone;totalAll+=kitems.length;cards+='<div class="s-card"><div class="ct"><div class="av av-k">'+getInitials(kn)+'</div><div><div>'+kn+'</div><div style="font-size:11px;color:var(--text-muted)">KASIR</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(kitems.length?Math.round(kdone/kitems.length*100):0)+'%"></div></div><div class="jcl">';for(var kj=0;kj<kitems.length;kj++){var key=jdKey(kn,kitems[kj],kj);var ck=!!jobdeskStatus[key];cards+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+kitems[kj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}cards+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--gold)"><i class="fas fa-cash-register"></i> KASIR</h3><div class="card-grid">'+cards+'</div></div>';}
   if(csList.length){var cgD=0,cgA=0;var cc="";for(var ci=0;ci<csList.length;ci++){var cn=csList[ci];var cd=0;for(var cj=0;cj<jdCs.length;cj++){if(jobdeskStatus[jdKey(cn,jdCs[cj],cj)])cd++;}cgD+=cd;cgA+=jdCs.length;totalDone+=cd;totalAll+=jdCs.length;cc+='<div class="s-card"><div class="ct"><div class="av av-c">'+getInitials(cn)+'</div><div><div>'+cn+'</div><div style="font-size:11px;color:var(--text-muted)">CS</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(jdCs.length?Math.round(cd/jdCs.length*100):0)+'%"></div></div><div class="jcl">';for(var cj=0;cj<jdCs.length;cj++){var key=jdKey(cn,jdCs[cj],cj);var ck=!!jobdeskStatus[key];cc+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+jdCs[cj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}cc+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--blue)"><i class="fas fa-headset"></i> CS</h3><div class="card-grid">'+cc+'</div></div>';}
   if(kksList.length){var tgD=0,tgA=0;var tc="";for(var ti=0;ti<kksList.length;ti++){var tn=kksList[ti];var td=0;for(var tj=0;tj<jdCs.length;tj++){if(jobdeskStatus[jdKey(tn,jdCs[tj],tj)])td++;}tgD+=td;tgA+=jdCs.length;totalDone+=td;totalAll+=jdCs.length;tc+='<div class="s-card"><div class="ct"><div class="av av-t">'+getInitials(tn)+'</div><div><div>'+tn+'</div><div style="font-size:11px;color:var(--text-muted)">KKS</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(jdCs.length?Math.round(td/jdCs.length*100):0)+'%"></div></div><div class="jcl">';for(var tj=0;tj<jdCs.length;tj++){var key=jdKey(tn,jdCs[tj],tj);var ck=!!jobdeskStatus[key];tc+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+jdCs[tj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}tc+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--teal)"><i class="fas fa-user-gear"></i> KKS</h3><div class="card-grid">'+tc+'</div></div>';}
+  if(leaderList.length){var lD=0,lA=0;var lc="";for(var li=0;li<leaderList.length;li++){var ln=leaderList[li];var litems=jdCs;var ld=0;for(var lj=0;lj<litems.length;lj++){if(jobdeskStatus[jdKey(ln,litems[lj],lj)])ld++;}lD+=ld;lA+=litems.length;totalDone+=ld;totalAll+=litems.length;lc+='<div class="s-card"><div class="ct"><div class="av av-l">'+getInitials(ln)+'</div><div><div>'+ln+'</div><div style="font-size:11px;color:var(--text-muted)">LEADER</div></div></div><div class="pbar"><div class="pfill pf-o" style="width:'+(litems.length?Math.round(ld/litems.length*100):0)+'%"></div></div><div class="jcl">';for(var lj=0;lj<litems.length;lj++){var key=jdKey(ln,litems[lj],lj);var ck=!!jobdeskStatus[key];lc+='<div class="jci'+(ck?" ck":"")+(editable?" ed":" ro")+'" data-jdk="'+key+'"><div class="jcb">'+(ck?'<i class="fas fa-check"></i>':'')+'</div><span>'+litems[lj]+'</span>'+(!editable?'<span class="jrt"><i class="fas fa-eye"></i></span>':'')+'</div>';}lc+='</div></div>';}html+='<div><h3 style="margin:16px 0 12px;color:var(--purple)"><i class="fas fa-crown"></i> LEADER</h3><div class="card-grid">'+lc+'</div></div>';}
   document.getElementById("jdCenter").innerHTML=html||'<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>Belum ada data jobdesk</p></div>';
   var pct=totalAll?Math.round(totalDone/totalAll*100):0;document.getElementById("jdStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalDone+'</span><span class="sl">Selesai</span></div><div class="stat-pill"><span class="sv gold">'+pct+'%</span><span class="sl">Progress</span></div>';
 }
 document.getElementById("jdCenter").addEventListener("click",function(e){var it=e.target.closest(".jci.ed");if(!it)return;var key=it.getAttribute("data-jdk");if(!key)return;db.ref("jobdeskStatus/"+key).set(jobdeskStatus[key]?null:true);});
-function openJdPicker(){if(!canEditJd()){showToast("Anda tidak memiliki akses edit Jobdesk","error");return;}document.getElementById("jdEditModal").classList.add("open");document.getElementById("jdAddRow").style.display="none";document.getElementById("jdEditSub").textContent="Pilih section untuk diedit";editJdTarget=null;var h='<p style="margin-bottom:14px">Pilih section yang ingin diedit jobdesk-nya:</p>';var csList=daftarStaf.filter(function(s){return s.role==="CS";});if(csList.length){h+='<div style="margin:10px 0 6px;color:var(--blue)"><i class="fas fa-headset"></i> CS (berlaku semua CS)</div><div class="kpr" data-pick="cs::__all__"><div><strong>Jobdesk CS</strong></div><span>'+jdCs.length+' tugas <i class="fas fa-chevron-right"></i></span></div>';}var kasirList=daftarStaf.filter(function(s){return s.role==="KASIR";});if(kasirList.length){h+='<div style="margin:14px 0 6px;color:var(--gold)"><i class="fas fa-cash-register"></i> Kasir (per individu)</div>';for(var i=0;i<kasirList.length;i++){var kn=kasirList[i].nama,cnt=(jdKasir[kn]||[]).length;h+='<div class="kpr" data-pick="kasir::'+kn+'"><div><strong>'+kn+'</strong></div><span>'+cnt+' tugas <i class="fas fa-chevron-right"></i></span></div>';}}document.getElementById("jdEditBody").innerHTML=h;}
+function openJdPicker(){if(!canEditJd()){showToast("Anda tidak memiliki akses edit Jobdesk","error");return;}document.getElementById("jdEditModal").classList.add("open");document.getElementById("jdAddRow").style.display="none";document.getElementById("jdEditSub").textContent="Pilih section untuk diedit";editJdTarget=null;var h='<p style="margin-bottom:14px">Pilih section yang ingin diedit jobdesk-nya:</p>';var csList=daftarStaf.filter(function(s){return s.role==="CS";});if(csList.length){h+='<div style="margin:10px 0 6px;color:var(--blue)"><i class="fas fa-headset"></i> CS (berlaku semua CS)</div><div class="kpr" data-pick="cs::__all__"><div><strong>Jobdesk CS</strong></div><span>'+jdCs.length+' tugas <i class="fas fa-chevron-right"></i></span></div>';}var kasirList=daftarStaf.filter(function(s){return s.role==="KASIR";});if(kasirList.length){h+='<div style="margin:14px 0 6px;color:var(--gold)"><i class="fas fa-cash-register"></i> Kasir (per individu)</div>';for(var i=0;i<kasirList.length;i++){var kn=kasirList[i].nama,cnt=(jdKasir[kn]||[]).length;h+='<div class="kpr" data-pick="kasir::'+kn+'"><div><strong>'+kn+'</strong></div><span>'+cnt+' tugas <i class="fas fa-chevron-right"></i></span></div>';}}var leaderList=daftarStaf.filter(function(s){return s.role==="LEADER";});if(leaderList.length){h+='<div style="margin:14px 0 6px;color:var(--purple)"><i class="fas fa-crown"></i> LEADER (per individu)</div>';for(var i=0;i<leaderList.length;i++){var ln=leaderList[i].nama,cnt=jdCs.length;h+='<div class="kpr" data-pick="leader::'+ln+'"><div><strong>'+ln+'</strong></div><span>'+cnt+' tugas <i class="fas fa-chevron-right"></i></span></div>';}}document.getElementById("jdEditBody").innerHTML=h;}
 document.getElementById("jdEditBody").addEventListener("click",function(e){var pr=e.target.closest(".kpr");if(pr){var pick=pr.getAttribute("data-pick");if(pick){var parts=pick.split("::");enterEditMode(parts[0],parts[1]);}}var del=e.target.closest(".jed");if(del){var idx=parseInt(del.getAttribute("data-idx"));if(!isNaN(idx))removeJdItem(idx);}});
-function enterEditMode(type,name){editJdTarget={type:type,nama:name};var items;if(type==="kasir"){if(!jdKasir[name])jdKasir[name]=[];items=jdKasir[name];document.getElementById("jdEditSub").textContent="Jobdesk: "+name;}else{items=jdCs;document.getElementById("jdEditSub").textContent="Jobdesk CS (berlaku semua CS)";}document.getElementById("jdAddRow").style.display="flex";document.getElementById("newJdItem").value="";renderEditList(items);}
+function enterEditMode(type,name){editJdTarget={type:type,nama:name};var items;if(type==="kasir"){if(!jdKasir[name])jdKasir[name]=[];items=jdKasir[name];document.getElementById("jdEditSub").textContent="Jobdesk: "+name;}else if(type==="leader"){items=jdCs;document.getElementById("jdEditSub").textContent="Jobdesk LEADER: "+name;}else{items=jdCs;document.getElementById("jdEditSub").textContent="Jobdesk CS (berlaku semua CS)";}document.getElementById("jdAddRow").style.display="flex";document.getElementById("newJdItem").value="";renderEditList(items);}
 function renderEditList(items){var el=document.getElementById("jdEditBody");if(!items||!items.length){el.innerHTML='<div style="text-align:center;padding:30px"><i class="fas fa-inbox"></i><p>Belum ada tugas. Tambahkan di bawah.</p></div>';return;}var h="";for(var i=0;i<items.length;i++){h+='<div class="jei"><div style="width:22px;height:22px;background:var(--gold-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;flex-shrink:0">'+(i+1)+'</div><span style="flex:1">'+items[i]+'</span><button class="jed" data-idx="'+i+'"><i class="fas fa-trash-can"></i></button></div>';}el.innerHTML=h;}
 function addJdItem(){var input=document.getElementById("newJdItem"),val=input.value.trim().toUpperCase();if(!val){showToast("Masukkan nama tugas","error");return;}if(!editJdTarget)return;var arr=getTargetArr();for(var i=0;i<arr.length;i++){if(arr[i]===val){showToast("Tugas sudah ada","error");return;}}arr.push(val);saveJdToFirebase();renderEditList(arr);input.value="";showToast('"'+val+'" ditambahkan',"success");}
 function removeJdItem(idx){if(!editJdTarget)return;var arr=getTargetArr(),removed=arr.splice(idx,1)[0];saveJdToFirebase();cleanupOrphanStatus();renderEditList(arr);showToast('"'+removed+'" dihapus',"info");}
-function getTargetArr(){if(!editJdTarget)return[];if(editJdTarget.type==="kasir"){if(!jdKasir[editJdTarget.nama])jdKasir[editJdTarget.nama]=[];return jdKasir[editJdTarget.nama];}return jdCs;}
+function getTargetArr(){if(!editJdTarget)return[];if(editJdTarget.type==="kasir"){if(!jdKasir[editJdTarget.nama])jdKasir[editJdTarget.nama]=[];return jdKasir[editJdTarget.nama];}else if(editJdTarget.type==="leader"){return jdCs;}return jdCs;}
 function saveJdToFirebase(){var obj={};for(var n in jdKasir)obj[n]=arrToObj(jdKasir[n]);db.ref("jdKasir").set(obj);db.ref("jdCs").set(arrToObj(jdCs));}
 function cleanupOrphanStatus(){var valid={};for(var n in jdKasir){var it=jdKasir[n]||[];for(var i=0;i<it.length;i++)valid[jdKey(n,it[i],i)]=true;}for(var ci=0;ci<daftarStaf.length;ci++){if(daftarStaf[ci].role!=="KASIR"){for(var j=0;j<jdCs.length;j++)valid[jdKey(daftarStaf[ci].nama,jdCs[j],j)]=true;}}var rm={};for(var k in jobdeskStatus){if(!valid[k])rm[k]=null;}if(Object.keys(rm).length>0)db.ref("jobdeskStatus").update(rm);}
 function closeJdEdit(){document.getElementById("jdEditModal").classList.remove("open");editJdTarget=null;if(currentView==="jobdesk")renderJobdesk();}
 
 /* SHIFT */
-function renderShift(){var editable=canEditShift();document.getElementById("shiftLock").style.display=editable?"none":"flex";var kasirList=[],csList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else kksList.push(daftarStaf[i].nama);}var totalAssigned=0;for(var n in shiftData){if(shiftData[n])totalAssigned++;}var html="";html+=buildShiftSection("KASIR",kasirList,editable);html+=buildShiftSection("CS",csList,editable);html+=buildShiftSection("KKS",kksList,editable);document.getElementById("shiftCenter").innerHTML=html||'<div class="empty-state"><i class="fas fa-clock"></i><p>Belum ada data shift</p></div>';document.getElementById("shiftStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalAssigned+'</span><span class="sl">Ditugaskan</span></div><div class="stat-pill"><span class="sv gold">'+daftarStaf.length+'</span><span class="sl">Total</span></div>';}
+function renderShift(){var editable=canEditShift();document.getElementById("shiftLock").style.display=editable?"none":"flex";var kasirList=[],csList=[],kksList=[],leaderList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="KKS")kksList.push(daftarStaf[i].nama);else if(daftarStaf[i].role==="LEADER")leaderList.push(daftarStaf[i].nama);}var totalAssigned=0;for(var n in shiftData){if(shiftData[n])totalAssigned++;}var html="";html+=buildShiftSection("KASIR",kasirList,editable);html+=buildShiftSection("CS",csList,editable);html+=buildShiftSection("KKS",kksList,editable);html+=buildShiftSection("LEADER",leaderList,editable);document.getElementById("shiftCenter").innerHTML=html||'<div class="empty-state"><i class="fas fa-clock"></i><p>Belum ada data shift</p></div>';document.getElementById("shiftStats").innerHTML='<div class="stat-pill"><span class="sv green">'+totalAssigned+'</span><span class="sl">Ditugaskan</span></div><div class="stat-pill"><span class="sv gold">'+daftarStaf.length+'</span><span class="sl">Total</span></div>';}
 function buildShiftDisplay(val){if(!val)return'<div class="shift-display"><div class="sd-icon sd-libur"><i class="fas fa-clock"></i></div><div><div class="sd-label" style="color:var(--text-muted)">Belum diatur</div></div></div>';var preset=findPreset(val);if(preset)return'<div class="shift-display"><div class="sd-icon '+preset.cls+'"><i class="fas '+preset.icon+'"></i></div><div><div class="sd-label">'+preset.label+'</div><div class="sd-time">'+preset.time+'</div></div></div>';return'<div class="shift-display"><div class="sd-icon sd-libur"><i class="fas fa-clock"></i></div><div><div class="sd-label">Custom</div><div class="sd-time">'+val+'</div></div></div>';}
-function buildShiftSection(roleLabel,list,editable){if(!list.length)return"";var h='<div><h3 style="margin:16px 0 12px;color:'+(roleLabel==="KASIR"?"var(--gold)":roleLabel==="CS"?"var(--blue)":"var(--teal)")+'"><i class="fas fa-'+(roleLabel==="KASIR"?"cash-register":roleLabel==="CS"?"headset":"user-gear")+'"></i> '+roleLabel+'</h3><div class="card-grid">';for(var i=0;i<list.length;i++){var n=list[i],shift=shiftData[n]||"",isEditing=(editingShiftNama===n),safeN=n.replace(/'/g,"\\'"),safeId=n.replace(/\s/g,"_");h+='<div class="shift-card"><div><strong>'+n+'</strong><span style="font-size:11px;color:var(--text-muted);margin-left:8px">'+roleLabel+'</span></div>';if(isEditing&&editable){h+='<div style="margin-top:10px"><select id="shiftSel_'+safeId+'" onchange="onShiftPresetChange(this,\''+safeN+'\')" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><option value="">-- Pilih Shift --</option>';for(var p=0;p<SHIFT_PRESET.length;p++){var matched=shift&&findPreset(shift)===SHIFT_PRESET[p];h+='<option value="'+SHIFT_PRESET[p].label+'"'+(matched?" selected":"")+'>'+SHIFT_PRESET[p].label+' ('+SHIFT_PRESET[p].time+')</option>';}var isCustom=shift&&!findPreset(shift);h+='<option value="__custom"'+(isCustom?" selected":"")+'>Custom...</option></select>';h+='<input type="text" id="shiftInput_'+safeId+'" placeholder="Ketik manual..." value="'+(isCustom?shift:"")+'" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px">';h+='<div style="display:flex;gap:8px"><button class="btn btn-gold btn-sm" onclick="saveShift(\''+safeN+'\')">Simpan</button><button class="btn btn-outline btn-sm" onclick="cancelShiftEdit()">Batal</button></div></div>';}else{h+=buildShiftDisplay(shift);if(editable)h+='<button class="btn btn-sm btn-gold" style="margin-top:10px;width:100%" onclick="startShiftEdit(\''+safeN+'\')">Atur Shift</button>';}h+='</div>';}h+='</div></div>';return h;}
+function buildShiftSection(roleLabel,list,editable){if(!list.length)return"";var color=roleLabel==="KASIR"?"var(--gold)":roleLabel==="CS"?"var(--blue)":roleLabel==="KKS"?"var(--teal)":"var(--purple)";var icon=roleLabel==="KASIR"?"cash-register":roleLabel==="CS"?"headset":roleLabel==="KKS"?"user-gear":"crown";var giClass=roleLabel==="KASIR"?"ki":roleLabel==="CS"?"ci":roleLabel==="KKS"?"ti":"li";var grClass=roleLabel==="KASIR"?"kr":roleLabel==="CS"?"cr":roleLabel==="KKS"?"tr":"lr";var avClass=roleLabel==="KASIR"?"av-k":roleLabel==="CS"?"av-c":roleLabel==="KKS"?"av-t":"av-l";var mrClass=roleLabel==="KASIR"?"mr-k":roleLabel==="CS"?"mr-u":roleLabel==="KKS"?"mr-t":"mr-l";var h='<div><h3 style="margin:16px 0 12px;color:'+color+'"><i class="fas fa-'+icon+'"></i> '+roleLabel+'</h3><div class="card-grid">';for(var i=0;i<list.length;i++){var n=list[i],shift=shiftData[n]||"",isEditing=(editingShiftNama===n),safeN=n.replace(/'/g,"\\'"),safeId=n.replace(/\s/g,"_");h+='<div class="shift-card"><div><strong>'+n+'</strong><span style="font-size:11px;color:var(--text-muted);margin-left:8px">'+roleLabel+'</span></div>';if(isEditing&&editable){h+='<div style="margin-top:10px"><select id="shiftSel_'+safeId+'" onchange="onShiftPresetChange(this,\''+safeN+'\')" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><option value="">-- Pilih Shift --</option>';for(var p=0;p<SHIFT_PRESET.length;p++){var matched=shift&&findPreset(shift)===SHIFT_PRESET[p];h+='<option value="'+SHIFT_PRESET[p].label+'"'+(matched?" selected":"")+'>'+SHIFT_PRESET[p].label+' ('+SHIFT_PRESET[p].time+')</option>';}var isCustom=shift&&!findPreset(shift);h+='<option value="__custom"'+(isCustom?" selected":"")+'>Custom...</option></select>';h+='<input type="text" id="shiftInput_'+safeId+'" placeholder="Ketik manual..." value="'+(isCustom?shift:"")+'" style="width:100%;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:8px">';h+='<div style="display:flex;gap:8px"><button class="btn btn-gold btn-sm" onclick="saveShift(\''+safeN+'\')">Simpan</button><button class="btn btn-outline btn-sm" onclick="cancelShiftEdit()">Batal</button></div></div>';}else{h+=buildShiftDisplay(shift);if(editable)h+='<button class="btn btn-sm btn-gold" style="margin-top:10px;width:100%" onclick="startShiftEdit(\''+safeN+'\')">Atur Shift</button>';}h+='</div>';}h+='</div></div>';return h;}
 function startShiftEdit(nama){editingShiftNama=nama;renderShift();}
 function cancelShiftEdit(){editingShiftNama=null;renderShift();}
 function onShiftPresetChange(sel,nama){var val=sel.value,inp=document.getElementById("shiftInput_"+nama.replace(/\s/g,"_"));if(val==="__custom"){inp.value="";inp.focus();}else if(val){inp.value=val;}else{inp.value="";}}
@@ -721,7 +750,7 @@ function saveShift(nama){var inp=document.getElementById("shiftInput_"+nama.repl
 
 /* STAF DIRECTORY - TABEL */
 function renderStaf(){
-  var csList=[],kasirList=[],kksList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i]);else if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i]);else kksList.push(daftarStaf[i]);}
+  var csList=[],kasirList=[],kksList=[],leaderList=[];for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csList.push(daftarStaf[i]);else if(daftarStaf[i].role==="KASIR")kasirList.push(daftarStaf[i]);else if(daftarStaf[i].role==="KKS")kksList.push(daftarStaf[i]);else leaderList.push(daftarStaf[i]);}
   var izinCount=Object.keys(izinAktif).length;
   document.getElementById("stafHeaderActions").innerHTML='<div class="stat-pill"><span class="sv green">'+daftarStaf.length+'</span><span class="sl">Total</span></div><div class="stat-pill"><span class="sv gold">'+izinCount+'</span><span class="sl">Izin Aktif</span></div>';
   
@@ -730,15 +759,16 @@ function renderStaf(){
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--blue),#2563eb)"><i class="fas fa-headset"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--blue)">'+csList.length+'</div><div class="ssc-lbl">CS</div></div></div>';
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--gold),var(--orange))"><i class="fas fa-cash-register"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--gold)">'+kasirList.length+'</div><div class="ssc-lbl">KASIR</div></div></div>';
   h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--teal),#16a085)"><i class="fas fa-user-gear"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--teal)">'+kksList.length+'</div><div class="ssc-lbl">KKS</div></div></div>';
+  h+='<div class="staf-stat-card"><div class="ssc-icon" style="background:linear-gradient(135deg,var(--purple),#7c3aed)"><i class="fas fa-crown"></i></div><div class="ssc-info"><div class="ssc-val" style="color:var(--purple)">'+leaderList.length+'</div><div class="ssc-lbl">LEADER</div></div></div>';
   h+='</div>';
   
   h+='<div class="staf-table-container"><table class="staf-table"><thead><tr><th>NAMA STAF</th><th>JABATAN</th><th>STATUS</th><th>EMAIL</th></tr></thead><tbody>';
-  var allStaf = [...csList, ...kasirList, ...kksList];
+  var allStaf = [...leaderList, ...csList, ...kasirList, ...kksList];
   for(var i=0;i<allStaf.length;i++){
     var s=allStaf[i];
     var photoBase64=getPhotoBase64(s.nama);
     var isOnIzin=!!izinAktif[s.nama];
-    var avatarClass=s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks";
+    var avatarClass=s.role==="CS"?"cs":s.role==="KASIR"?"kasir":s.role==="KKS"?"kks":"leader";
     var avatarHtml=photoBase64?'<div class="staf-avatar-sm '+avatarClass+'" style="background-image:url('+photoBase64+');background-size:cover;background-position:center"></div>':'<div class="staf-avatar-sm '+avatarClass+'">'+getInitials(s.nama)+'</div>';
     var statusClass=isOnIzin?"izin":"online";
     var statusText=isOnIzin?"Sedang Izin":"Di Hokben";
@@ -747,7 +777,7 @@ function renderStaf(){
       durasi = " ("+formatDuration(Date.now()-izinAktif[s.nama].mulai)+")";
     }
     var gmail=s.gmail && s.gmail!=="-" ? s.gmail : "-";
-    h+='<tr><td><div class="staf-name-cell">'+avatarHtml+'<span class="staf-name-text">'+s.nama+'</span>'+(s.nama===ADMIN_USER?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px">ADMIN</span>':'')+'</div></td>';
+    h+='<tr><td><div class="staf-name-cell">'+avatarHtml+'<span class="staf-name-text">'+s.nama+'</span>'+(hasFullAccess(s.nama)?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px">ADMIN</span>':'')+'</div></td>';
     h+='<td><span class="role-tag '+(s.role||"").toLowerCase()+'">'+(s.role||"-")+'</span></td>';
     h+='<td><div class="status-badge-staf '+statusClass+'"><div class="status-dot-sm"></div>'+statusText+durasi+'</div></td>';
     h+='<td><div class="staf-gmail"><i class="fas fa-envelope"></i> '+gmail+'</div></td></tr>';
@@ -756,13 +786,12 @@ function renderStaf(){
   document.getElementById("stafContent").innerHTML=h;
 }
 
-/* ===== FOTO PROFIL - MENGGUNAKAN BASE64 (TIDAK PERLU FIREBASE STORAGE) ===== */
+/* ===== FOTO PROFIL - MENGGUNAKAN BASE64 ===== */
 function openPhotoUpload(){
   document.getElementById("photoModal").classList.add("open");
   var preview = document.getElementById("photoPreview");
   var currentPhoto = getPhotoBase64(currentUser);
   
-  // Reset preview
   preview.innerHTML = '';
   if(currentPhoto){
     var img = document.createElement('img');
@@ -779,7 +808,6 @@ function openPhotoUpload(){
     preview.appendChild(icon);
   }
   
-  // Reset status
   document.getElementById("uploadStatus").textContent = '';
   document.getElementById("uploadProgress").style.display = 'none';
   document.getElementById("uploadProgressBar").style.width = '0%';
@@ -801,26 +829,22 @@ function uploadPhotoBase64(){
     return;
   }
   
-  // Validasi tipe file
   var allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
   if(!allowedTypes.includes(file.type)){
     showToast("Format file tidak didukung. Gunakan JPG, PNG, atau GIF", "error");
     return;
   }
   
-  // Validasi ukuran (max 2MB)
   if(file.size > 2 * 1024 * 1024){
     showToast("Ukuran file maksimal 2MB", "error");
     return;
   }
   
-  // Tampilkan progress
   progressDiv.style.display = 'block';
   statusEl.textContent = 'Memproses gambar... 0%';
   statusEl.style.color = 'var(--text-muted)';
   progressBar.style.width = '0%';
   
-  // Baca file sebagai base64
   var reader = new FileReader();
   reader.onload = function(e){
     progressBar.style.width = '50%';
@@ -831,7 +855,6 @@ function uploadPhotoBase64(){
     progressBar.style.width = '100%';
     statusEl.textContent = 'Memproses gambar... 100%';
     
-    // Simpan ke database
     var updates = {};
     updates["staf/" + currentUser + "/photoBase64"] = base64String;
     db.ref().update(updates).then(function(){
@@ -840,11 +863,10 @@ function uploadPhotoBase64(){
       statusEl.style.color = 'var(--green)';
       showToast("Foto profil berhasil diupload!", "success");
       
-      // Tutup modal setelah 1 detik
       setTimeout(function(){
         closePhotoModal();
-        renderProfil(); // Refresh profil
-        if(currentView === "staf") renderStaf(); // Refresh staf jika perlu
+        renderProfil();
+        if(currentView === "staf") renderStaf();
       }, 1000);
     }).catch(function(err){
       console.error("Database error:", err);
@@ -876,41 +898,41 @@ function renderProfil(){
   if(!currentUser)return;var nama=currentUser,role=getRole(nama),gmail=getGmail(nama),cnt=hitungHarian[nama]||0;
   var myShift=shiftData[nama]||"",shiftDisplay=myShift,preset=findPreset(myShift);if(preset)shiftDisplay=preset.label+" - "+preset.time;else if(myShift)shiftDisplay=myShift;else shiftDisplay="Belum diatur";
   var isOnIzin=!!izinAktif[nama];var maxDay=getMaxPerDay(role),maxConc=getMaxConcurrent(role),curConc=countIzinByRole(role);
-  var photoBase64=getPhotoBase64(nama);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":"linear-gradient(135deg,var(--teal),#16a085)";
+  var photoBase64=getPhotoBase64(nama);var bgColor=role==="KASIR"?"linear-gradient(135deg,var(--gold),var(--orange))":role==="CS"?"linear-gradient(135deg,var(--blue),#2563eb)":role==="KKS"?"linear-gradient(135deg,var(--teal),#16a085)":"linear-gradient(135deg,var(--purple),#7c3aed)";
   var avatarHtml=photoBase64?'<img src="'+photoBase64+'" style="width:100%;height:100%;object-fit:cover;border-radius:60px">':'<i class="fas fa-user" style="font-size:48px;color:#fff"></i>';
-  var h='<div class="profile-card"><div class="profile-avatar-container" onclick="openPhotoUpload()"><div class="profile-avatar" style="background:'+bgColor+'">'+avatarHtml+'</div><div class="avatar-overlay"><i class="fas fa-camera"></i></div></div><div class="profile-name">'+nama+'</div><div class="profile-role"><span class="role-tag '+(role||"").toLowerCase()+'">'+(role||"-")+'</span>'+(nama===ADMIN_USER?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px">ADMIN</span>':'')+'</div><div class="profile-info"><div class="pi-box"><div class="pi-val gold">'+gmail+'</div><div class="pi-lbl">Gmail</div></div><div class="pi-box"><div class="pi-val blue">'+shiftDisplay+'</div><div class="pi-lbl">Shift</div></div><div class="pi-box"><div class="pi-val '+(cnt>0?"gold":"green")+'">'+cnt+' / '+maxDay+'</div><div class="pi-lbl">Izin Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(isOnIzin?"gold":"green")+'">'+(isOnIzin?"Sedang Izin":"Di Hokben")+'</div><div class="pi-lbl">Status</div></div></div><div style="padding:12px 16px;background:rgba(0,0,0,0.02);border-radius:12px;margin-bottom:24px;text-align:center"><span style="font-size:12px;color:var(--text-muted)">Batas izin bersamaan '+role+': </span><span style="font-size:16px;font-weight:700;color:var(--gold)">'+curConc+' / '+maxConc+' orang</span></div><div class="profile-section"><div class="ps-title"><i class="fas fa-key"></i> Ganti Password</div><div class="pw-fields"><input type="password" id="pwOld" placeholder="Password lama"><input type="password" id="pwNew" placeholder="Password baru"><input type="password" id="pwConfirm" placeholder="Konfirmasi password baru"></div><div class="pw-msg" id="pwMsg"></div><button class="btn btn-full btn-gold btn-sm" onclick="changePassword()" style="margin-top:8px"><i class="fas fa-key"></i> Ganti Password</button></div></div>';
+  var h='<div class="profile-card"><div class="profile-avatar-container" onclick="openPhotoUpload()"><div class="profile-avatar" style="background:'+bgColor+'">'+avatarHtml+'</div><div class="avatar-overlay"><i class="fas fa-camera"></i></div></div><div class="profile-name">'+nama+'</div><div class="profile-role"><span class="role-tag '+(role||"").toLowerCase()+'">'+(role||"-")+'</span>'+(hasFullAccess(nama)?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px">ADMIN</span>':'')+'</div><div class="profile-info"><div class="pi-box"><div class="pi-val gold">'+gmail+'</div><div class="pi-lbl">Gmail</div></div><div class="pi-box"><div class="pi-val blue">'+shiftDisplay+'</div><div class="pi-lbl">Shift</div></div><div class="pi-box"><div class="pi-val '+(cnt>0?"gold":"green")+'">'+cnt+' / '+maxDay+'</div><div class="pi-lbl">Izin Hari Ini</div></div><div class="pi-box"><div class="pi-val '+(isOnIzin?"gold":"green")+'">'+(isOnIzin?"Sedang Izin":"Di Hokben")+'</div><div class="pi-lbl">Status</div></div></div><div style="padding:12px 16px;background:rgba(0,0,0,0.02);border-radius:12px;margin-bottom:24px;text-align:center"><span style="font-size:12px;color:var(--text-muted)">Batas izin bersamaan '+role+': </span><span style="font-size:16px;font-weight:700;color:var(--gold)">'+curConc+' / '+maxConc+' orang</span></div><div class="profile-section"><div class="ps-title"><i class="fas fa-key"></i> Ganti Password</div><div class="pw-fields"><input type="password" id="pwOld" placeholder="Password lama"><input type="password" id="pwNew" placeholder="Password baru"><input type="password" id="pwConfirm" placeholder="Konfirmasi password baru"></div><div class="pw-msg" id="pwMsg"></div><button class="btn btn-full btn-gold btn-sm" onclick="changePassword()" style="margin-top:8px"><i class="fas fa-key"></i> Ganti Password</button></div></div>';
   document.getElementById("profileWrap").innerHTML=h;
 }
 function changePassword(){var old=document.getElementById("pwOld").value,nw=document.getElementById("pwNew").value,conf=document.getElementById("pwConfirm").value,msg=document.getElementById("pwMsg");if(!old||!nw||!conf){msg.textContent="Semua field harus diisi";msg.style.color="var(--red)";return;}if(old!==getPass(currentUser)){msg.textContent="Password lama salah";msg.style.color="var(--red)";return;}if(nw!==conf){msg.textContent="Konfirmasi tidak cocok";msg.style.color="var(--red)";return;}if(nw===old){msg.textContent="Password baru harus berbeda";msg.style.color="var(--red)";return;}db.ref("staf/"+currentUser+"/password").set(nw);msg.textContent="Password berhasil diubah";msg.style.color="var(--green)";document.getElementById("pwOld").value="";document.getElementById("pwNew").value="";document.getElementById("pwConfirm").value="";showToast("Password berhasil diubah","success");}
 
 /* ADMIN */
-function renderMaxIzin(){var roles=["CS","KASIR","KKS"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxPerDay(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="day">-</button><span class="stepper-value" id="maxDay_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="day">+</button></div></div>';}document.getElementById("adminMaxIzin").innerHTML=h;}
-function renderMaxConcurrent(){var roles=["CS","KASIR","KKS"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxConcurrent(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="conc">-</button><span class="stepper-value" id="maxConc_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="conc">+</button></div></div>';}document.getElementById("adminMaxConcurrent").innerHTML=h;}
-function renderPeraturan(){var roles=["CS","KASIR","KKS"],keys=["editJobdesk","editShift","viewIzinLog"],h="";for(var k=0;k<keys.length;k++){var key=keys[k];var label=key==="editJobdesk"?"Edit Jobdesk":key==="editShift"?"Edit Shift":"Lihat Riwayat Izin";h+='<div style="margin-bottom:16px"><div style="font-weight:600;margin-bottom:8px">'+label+'</div><div class="toggle-group">';for(var r=0;r<roles.length;r++){var role=roles[r],checked=(settings[key]&&settings[key][role])?true:false;h+='<div class="toggle-item"><label>'+role+'</label><div class="toggle-switch '+(checked?'active':'')+'" data-setting="'+key+'" data-role="'+role+'"></div></div>';}h+='</div></div>';}document.getElementById("adminPeraturan").innerHTML=h;}
+function renderMaxIzin(){var roles=["CS","KASIR","KKS","LEADER"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxPerDay(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="day">-</button><span class="stepper-value" id="maxDay_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="day">+</button></div></div>';}document.getElementById("adminMaxIzin").innerHTML=h;}
+function renderMaxConcurrent(){var roles=["CS","KASIR","KKS","LEADER"],h="";for(var i=0;i<roles.length;i++){var role=roles[i],val=getMaxConcurrent(role);h+='<div class="role-setting"><span class="role-name">'+role+'</span><div class="stepper"><button class="stepper-minus" data-role="'+role+'" data-type="conc">-</button><span class="stepper-value" id="maxConc_'+role+'">'+val+'</span><button class="stepper-plus" data-role="'+role+'" data-type="conc">+</button></div></div>';}document.getElementById("adminMaxConcurrent").innerHTML=h;}
+function renderPeraturan(){var roles=["CS","KASIR","KKS","LEADER"],keys=["editJobdesk","editShift","viewIzinLog"],h="";for(var k=0;k<keys.length;k++){var key=keys[k];var label=key==="editJobdesk"?"Edit Jobdesk":key==="editShift"?"Edit Shift":"Lihat Riwayat Izin";h+='<div style="margin-bottom:16px"><div style="font-weight:600;margin-bottom:8px">'+label+'</div><div class="toggle-group">';for(var r=0;r<roles.length;r++){var role=roles[r],checked=(settings[key]&&settings[key][role])?true:false;h+='<div class="toggle-item"><label>'+role+'</label><div class="toggle-switch '+(checked?'active':'')+'" data-setting="'+key+'" data-role="'+role+'"></div></div>';}h+='</div></div>';}document.getElementById("adminPeraturan").innerHTML=h;}
 document.getElementById("adminPeraturan").addEventListener("click",function(e){var toggle=e.target.closest(".toggle-switch");if(!toggle)return;var setting=toggle.getAttribute("data-setting");var role=toggle.getAttribute("data-role");var newVal=!toggle.classList.contains("active");if(!settings[setting])settings[setting]={};settings[setting][role]=newVal;db.ref("settings/"+setting+"/"+role).set(newVal);if(newVal)toggle.classList.add("active");else toggle.classList.remove("active");showToast("Akses "+role+" untuk "+setting+" "+(newVal?"diaktifkan":"dinonaktifkan"),"info");});
 function loadAdminLogByDate(){var dateInput=document.getElementById("adminLogDate").value;if(!dateInput){showToast("Pilih tanggal","error");return;}currentAdminLogDate=dateInput;var d=new Date(dateInput+"T12:00:00");var dateStr=d.toDateString();db.ref("logIzin/"+dateStr).once("value",function(snap){var r=snap.val();renderAdminLogList(r?Object.values(r):[],dateInput);});}
 function resetAdminLogDate(){document.getElementById("adminLogDate").value=todayYMD();loadAdminLogByDate();}
 function renderAdminLogList(logs,dateLabel){var el=document.getElementById("adminLogList"),sorted=logs.slice().sort(function(a,b){return(b.selesai||b.mulai)-(a.selesai||a.mulai);});if(!sorted.length){el.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><p>Tidak ada riwayat untuk tanggal '+dateLabel+'</p></div>';return;}var h="",now=Date.now();for(var j=0;j<sorted.length;j++){var l=sorted[j];var endTime=l.selesai?l.selesai:now;var durasiStr=formatDuration(endTime-l.mulai);var w1=formatTime(l.mulai);var w2=l.selesai?formatTime(l.selesai):"-";var lewat=(endTime-l.mulai)>ALERT_MENIT*60000;h+='<div class="log-item-admin '+(lewat?'overdue':'')+'"><div class="log-name">'+l.nama+(l.selesai===null&&dateLabel===todayYMD()?' <span style="font-size:10px;color:var(--gold)">(AKTIF)</span>':'')+'</div><div class="log-detail">'+durasiStr+' \u2022 '+w1+' \u2014 '+w2+' \u2022 '+(l.jabatan||"")+'</div><div class="log-badge '+(lewat?'lewat':'aman')+'">'+(lewat?'LEWAT BATAS':'AMAN')+'</div></div>';}el.innerHTML=h;}
-function renderAdminStats(){var csC=0,kasirC=0,kksC=0,izinActive=Object.keys(izinAktif).length;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csC++;else if(daftarStaf[i].role==="KASIR")kasirC++;else kksC++;}document.getElementById("adminStats").innerHTML='<div class="stat-card"><div class="stat-value">'+daftarStaf.length+'</div><div class="stat-label">Total Staf</div></div><div class="stat-card"><div class="stat-value" style="color:var(--blue)">'+csC+'</div><div class="stat-label">CS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--gold)">'+kasirC+'</div><div class="stat-label">KASIR</div></div><div class="stat-card"><div class="stat-value" style="color:var(--teal)">'+kksC+'</div><div class="stat-label">KKS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--red)">'+izinActive+'</div><div class="stat-label">Izin Aktif</div></div>';}
-function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=s.nama===ADMIN_USER;var photoBase64=getPhotoBase64(s.nama);var avatarInner=photoBase64?'<img src="'+photoBase64+'" alt="">':getInitials(s.nama);h+='<div class="staff-item"><div class="staff-info"><div class="staff-avatar '+(s.role==="CS"?"cs":s.role==="KASIR"?"kasir":"kks")+'">'+avatarInner+'</div><div class="staff-details"><div class="staff-name">'+s.nama+(prot?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px;margin-left:6px">ADMIN</span>':'')+'</div><div class="staff-role">'+s.role+' \u2022 '+(s.gmail||"-")+'</div></div></div><div class="staff-actions">';if(!prot){h+='<button class="btn-edit" data-edit="'+s.nama+'" title="Edit"><i class="fas fa-edit"></i></button>';h+='<button class="btn-reset" data-reset="'+s.nama+'" title="Reset PW"><i class="fas fa-key"></i></button>';h+='<button class="btn-delete" data-delete="'+s.nama+'" title="Hapus"><i class="fas fa-trash"></i></button>';}h+='</div></div>';}el.innerHTML=h;}
+function renderAdminStats(){var csC=0,kasirC=0,kksC=0,leaderC=0,izinActive=Object.keys(izinAktif).length;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].role==="CS")csC++;else if(daftarStaf[i].role==="KASIR")kasirC++;else if(daftarStaf[i].role==="KKS")kksC++;else if(daftarStaf[i].role==="LEADER")leaderC++;}document.getElementById("adminStats").innerHTML='<div class="stat-card"><div class="stat-value">'+daftarStaf.length+'</div><div class="stat-label">Total Staf</div></div><div class="stat-card"><div class="stat-value" style="color:var(--blue)">'+csC+'</div><div class="stat-label">CS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--gold)">'+kasirC+'</div><div class="stat-label">KASIR</div></div><div class="stat-card"><div class="stat-value" style="color:var(--teal)">'+kksC+'</div><div class="stat-label">KKS</div></div><div class="stat-card"><div class="stat-value" style="color:var(--purple)">'+leaderC+'</div><div class="stat-label">LEADER</div></div><div class="stat-card"><div class="stat-value" style="color:var(--red)">'+izinActive+'</div><div class="stat-label">Izin Aktif</div></div>';}
+function renderStaffList(){var el=document.getElementById("staffList"),h="";for(var i=0;i<daftarStaf.length;i++){var s=daftarStaf[i],prot=hasFullAccess(s.nama);var photoBase64=getPhotoBase64(s.nama);var avatarInner=photoBase64?'<img src="'+photoBase64+'" alt="">':getInitials(s.nama);h+='<div class="staff-item"><div class="staff-info"><div class="staff-avatar '+(s.role==="CS"?"cs":s.role==="KASIR"?"kasir":s.role==="KKS"?"kks":"leader")+'">'+avatarInner+'</div><div class="staff-details"><div class="staff-name">'+s.nama+(prot?' <span style="background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;padding:2px 6px;border-radius:4px;font-size:8px;margin-left:6px">ADMIN</span>':'')+'</div><div class="staff-role">'+s.role+' \u2022 '+(s.gmail||"-")+'</div></div></div><div class="staff-actions">';if(!prot){h+='<button class="btn-edit" data-edit="'+s.nama+'" title="Edit"><i class="fas fa-edit"></i></button>';h+='<button class="btn-reset" data-reset="'+s.nama+'" title="Reset PW"><i class="fas fa-key"></i></button>';h+='<button class="btn-delete" data-delete="'+s.nama+'" title="Hapus"><i class="fas fa-trash"></i></button>';}h+='</div></div>';}el.innerHTML=h;}
 document.getElementById("staffList").addEventListener("click",function(e){var btnDel=e.target.closest("[data-delete]");if(btnDel){var n=btnDel.getAttribute("data-delete");if(n&&confirm("Hapus staf "+n+"?"))removeStaff(n);return;}var btnPw=e.target.closest("[data-reset]");if(btnPw){var n2=btnPw.getAttribute("data-reset");if(n2&&confirm("Reset password "+n2+" menjadi "+DEFAULT_PASS+"?"))resetStaffPw(n2);return;}var btnEdit=e.target.closest("[data-edit]");if(btnEdit){var n3=btnEdit.getAttribute("data-edit");if(n3)openEditStaff(n3);return;}});
-function openEditStaff(nama){if(nama===ADMIN_USER)return;document.getElementById("editStaffNameDisplay").textContent="Edit Staf: "+nama;document.getElementById("editStaffGmail").value=getGmail(nama);document.getElementById("editStaffPass").value="";document.getElementById("editStaffModal").classList.add("open");window._editStaffTarget=nama;}
+function openEditStaff(nama){if(hasFullAccess(nama)){showToast("Tidak bisa edit admin/leader","error");return;}document.getElementById("editStaffNameDisplay").textContent="Edit Staf: "+nama;document.getElementById("editStaffGmail").value=getGmail(nama);document.getElementById("editStaffPass").value="";document.getElementById("editStaffModal").classList.add("open");window._editStaffTarget=nama;}
 function saveEditStaff(){var nama=window._editStaffTarget;if(!nama)return;var gmail=document.getElementById("editStaffGmail").value.trim().toLowerCase();var newPass=document.getElementById("editStaffPass").value.trim();if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";var updates={};updates["staf/"+nama+"/gmail"]=gmail;if(newPass)updates["staf/"+nama+"/password"]=newPass;db.ref().update(updates);showToast("Data staf "+nama+" diperbarui","success");closeEditStaff();}
 function closeEditStaff(){document.getElementById("editStaffModal").classList.remove("open");window._editStaffTarget=null;}
 function addStaff(){var nI=document.getElementById("newStaffName"),gI=document.getElementById("newStaffGmail"),rS=document.getElementById("newStaffRole"),nama=nI.value.trim().toUpperCase(),gmail=gI.value.trim().toLowerCase();if(!nama){showToast("Masukkan nama staf","error");return;}if(nama.length<2){showToast("Nama terlalu pendek","error");return;}if(gmail&&gmail.indexOf("@")===-1){showToast("Format Gmail tidak valid","error");return;}if(!gmail)gmail="-";for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===nama){showToast("Nama sudah ada","error");return;}}db.ref("staf/"+nama).set({nama:nama,role:rS.value,gmail:gmail,password:DEFAULT_PASS,photoBase64:null});nI.value="";gI.value="";showToast('"'+nama+'" ('+rS.value+') ditambahkan - Password: '+DEFAULT_PASS,"success");}
-function removeStaff(nama){if(nama===ADMIN_USER)return;if(izinAktif[nama]){showToast("Staf sedang izin, force end dulu","error");return;}var u={};u["staf/"+nama]=null;u["jdKasir/"+nama]=null;db.ref().update(u);showToast('"'+nama+'" dihapus',"info");}
-function resetStaffPw(nama){if(nama===ADMIN_USER)return;db.ref("staf/"+nama+"/password").set(DEFAULT_PASS);showToast('Password '+nama+' direset ke "'+DEFAULT_PASS+'"',"success");}
-function openAdmin(){if(currentUser!==ADMIN_USER)return;renderAdminStats();renderStaffList();renderMaxIzin();renderMaxConcurrent();renderPeraturan();var todayDate=todayYMD();document.getElementById("adminLogDate").value=todayDate;currentAdminLogDate=todayDate;loadAdminLogByDate();document.getElementById("adminModal").classList.add("open");}
+function removeStaff(nama){if(hasFullAccess(nama)){showToast("Tidak bisa menghapus admin/leader","error");return;}if(izinAktif[nama]){showToast("Staf sedang izin, force end dulu","error");return;}var u={};u["staf/"+nama]=null;u["jdKasir/"+nama]=null;db.ref().update(u);showToast('"'+nama+'" dihapus',"info");}
+function resetStaffPw(nama){if(hasFullAccess(nama)){showToast("Tidak bisa reset password admin/leader","error");return;}db.ref("staf/"+nama+"/password").set(DEFAULT_PASS);showToast('Password '+nama+' direset ke "'+DEFAULT_PASS+'"',"success");}
+function openAdmin(){if(!hasFullAccess(currentUser))return;renderAdminStats();renderStaffList();renderMaxIzin();renderMaxConcurrent();renderPeraturan();var todayDate=todayYMD();document.getElementById("adminLogDate").value=todayDate;currentAdminLogDate=todayDate;loadAdminLogByDate();document.getElementById("adminModal").classList.add("open");}
 function closeAdmin(){document.getElementById("adminModal").classList.remove("open");}
 
 /* STEPPER */
-document.addEventListener("click",function(e){var btn=e.target.closest("[data-role][data-type]");if(!btn)return;if(!btn.classList.contains("stepper-minus")&&!btn.classList.contains("stepper-plus"))return;var role=btn.getAttribute("data-role");var type=btn.getAttribute("data-type");var isMinus=btn.classList.contains("stepper-minus");var cur=type==="day"?getMaxPerDay(role):getMaxConcurrent(role);if(typeof cur!=="number"||isNaN(cur))cur=type==="day"?4:2;var nv=isMinus?Math.max(0,cur-1):Math.min(10,cur+1);if(type==="day"){if(!settings.maxIzinPerDay)settings.maxIzinPerDay={CS:4,KASIR:4,KKS:4};settings.maxIzinPerDay[role]=nv;}else{if(!settings.maxIzinConcurrent)settings.maxIzinConcurrent={CS:2,KASIR:2,KKS:2};settings.maxIzinConcurrent[role]=nv;}var elId=type==="day"?("maxDay_"+role):("maxConc_"+role);var el=document.getElementById(elId);if(el)el.textContent=nv;var up={};if(type==="day")up["maxIzinPerDay/"+role]=nv;else up["maxIzinConcurrent/"+role]=nv;db.ref("settings").update(up);});
+document.addEventListener("click",function(e){var btn=e.target.closest("[data-role][data-type]");if(!btn)return;if(!btn.classList.contains("stepper-minus")&&!btn.classList.contains("stepper-plus"))return;var role=btn.getAttribute("data-role");var type=btn.getAttribute("data-type");var isMinus=btn.classList.contains("stepper-minus");var cur=type==="day"?getMaxPerDay(role):getMaxConcurrent(role);if(typeof cur!=="number"||isNaN(cur))cur=type==="day"?4:2;var nv=isMinus?Math.max(0,cur-1):Math.min(10,cur+1);if(type==="day"){if(!settings.maxIzinPerDay)settings.maxIzinPerDay={CS:4,KASIR:4,KKS:4,LEADER:10};settings.maxIzinPerDay[role]=nv;}else{if(!settings.maxIzinConcurrent)settings.maxIzinConcurrent={CS:2,KASIR:2,KKS:2,LEADER:5};settings.maxIzinConcurrent[role]=nv;}var elId=type==="day"?("maxDay_"+role):("maxConc_"+role);var el=document.getElementById(elId);if(el)el.textContent=nv;var up={};if(type==="day")up["maxIzinPerDay/"+role]=nv;else up["maxIzinConcurrent/"+role]=nv;db.ref("settings").update(up);});
 
 /* LISTENERS */
 function attachListeners(){
-  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(daftarStaf[i].nama===ADMIN_USER){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="hokben.admin@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;if(!daftarStaf[i].photoBase64)daftarStaf[i].photoBase64=null;found=true;break;}}if(!found){daftarStaf.unshift({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoBase64:null});db.ref("staf/"+ADMIN_USER).set({nama:ADMIN_USER,role:"CS",gmail:"hokben.admin@gmail.com",password:DEFAULT_PASS,photoBase64:null});}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
+  db.ref("staf").on("value",function(snap){daftarStaf=stafObjToArr(snap.val());var found=false;for(var i=0;i<daftarStaf.length;i++){if(ADMIN_USERS.includes(daftarStaf[i].nama)){daftarStaf[i].role="CS";if(!daftarStaf[i].gmail)daftarStaf[i].gmail="admin.hokben@gmail.com";if(!daftarStaf[i].password)daftarStaf[i].password=DEFAULT_PASS;if(!daftarStaf[i].photoBase64)daftarStaf[i].photoBase64=null;found=true;}}for(var j=0;j<ADMIN_USERS.length;j++){var adminName=ADMIN_USERS[j];var adminExists=false;for(var k=0;k<daftarStaf.length;k++){if(daftarStaf[k].nama===adminName){adminExists=true;break;}}if(!adminExists){daftarStaf.unshift({nama:adminName,role:"CS",gmail:"admin.hokben@gmail.com",password:DEFAULT_PASS,photoBase64:null});db.ref("staf/"+adminName).set({nama:adminName,role:"CS",gmail:"admin.hokben@gmail.com",password:DEFAULT_PASS,photoBase64:null});}}for(var j=0;j<LEADER_USERS.length;j++){var leaderName=LEADER_USERS[j];var leaderExists=false;for(var k=0;k<daftarStaf.length;k++){if(daftarStaf[k].nama===leaderName){leaderExists=true;break;}}if(!leaderExists){daftarStaf.unshift({nama:leaderName,role:"LEADER",gmail:"leader.hokben@gmail.com",password:DEFAULT_PASS,photoBase64:null});db.ref("staf/"+leaderName).set({nama:leaderName,role:"LEADER",gmail:"leader.hokben@gmail.com",password:DEFAULT_PASS,photoBase64:null});}}for(var j=0;j<daftarStaf.length;j++){if(!daftarStaf[j].password){daftarStaf[j].password=DEFAULT_PASS;db.ref("staf/"+daftarStaf[j].nama+"/password").set(DEFAULT_PASS);}}if(document.getElementById("adminModal").classList.contains("open")){renderAdminStats();renderStaffList();}if(currentView==="profil")renderProfil();if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
   db.ref("jdKasir").on("value",function(snap){var raw=snap.val()||{};jdKasir={};for(var n in raw)jdKasir[n]=objToArr(raw[n]);if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="kasir")renderEditList(jdKasir[editJdTarget.nama]||[]);});
-  db.ref("jdCs").on("value",function(snap){jdCs=objToArr(snap.val());if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&editJdTarget.type==="cs")renderEditList(jdCs);});
+  db.ref("jdCs").on("value",function(snap){jdCs=objToArr(snap.val());if(currentView==="jobdesk")renderJobdesk();if(document.getElementById("jdEditModal").classList.contains("open")&&editJdTarget&&(editJdTarget.type==="cs"||editJdTarget.type==="leader"))renderEditList(jdCs);});
   db.ref("izinAktif").on("value",function(snap){izinAktif=snap.val()||{};if(currentView==="izin")renderIzinUI();if(currentView==="staf")renderStaf();});
   db.ref("hitungHarian/"+today()).on("value",function(snap){hitungHarian=snap.val()||{};if(currentView==="izin")renderIzinUI();if(currentView==="profil")renderProfil();});
   db.ref("logIzin/"+today()).on("value",function(snap){var r=snap.val();logIzin=r?Object.values(r):[];if(currentView==="izin")renderIzinUI();if(document.getElementById("adminModal").classList.contains("open")&&currentAdminLogDate===todayYMD())loadAdminLogByDate();});
